@@ -6,6 +6,7 @@ import Authentication from '@/components/pages/Authentication/Authentication'
 import Home from '@/components/pages/Home'
 import Product from '@/components/pages/Product'
 import Stock from '@/components/pages/Stock'
+import Users from '@/components/pages/Users'
 // Global components
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -46,6 +47,18 @@ const router = new Router({
       name: 'Stock',
       components: {
         default: Stock,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/manageUsers',
+      name: 'Users',
+      components: {
+        default: Users,
         header: Header,
         foter:Footer
       },
