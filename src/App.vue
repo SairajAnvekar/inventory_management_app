@@ -2,7 +2,10 @@
   <div id="app">
     <v-app>
      <router-view/>
-  </v-app>    
+  </v-app>  
+  <div id="loader" class="loading">
+      <v-progress-circular indeterminate :size="70" :width="7" color="primary" class="loader"></v-progress-circular>
+  </div>  
   </div>
 </template>
 
@@ -10,6 +13,7 @@
 export default {
   name: 'App'
 }
+
 </script>
 
 <style>
@@ -19,7 +23,7 @@ export default {
   @import "./assets/styles";
     body {
    /* background: url('./assets/images/background.jpg') no-repeat center center fixed;*/
-    &:after {
+   /* &:after {
       content: '';
       position: fixed;
       width: 100%;
@@ -28,6 +32,6 @@ export default {
       left: 0;
       opacity: .3;
       z-index: -1;
-    }
+    }*/
   }
 </style>
