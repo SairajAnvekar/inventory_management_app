@@ -5,7 +5,7 @@
         <v-container >     
            <v-list >
              <v-layout row wrap header >
-              <h1>Welcome To Inventory Management</h1>               
+              <h1>Welcome To Vision Gallery</h1>               
             </v-layout>              
           </v-list>                 
         </v-container>

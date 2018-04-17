@@ -85,7 +85,7 @@
 
                                         <div v-for="(item,i) in categoryItems" >
                                             <!-- {{item}} <input type="text" id="" class="subCategories" /> -->
-                                            <v-text-field :label="item" :ref="'fields_'+i" v-model="categoryDetails.subCategories[item]"></v-text-field>
+                                            <v-text-field :label="item" :ref="'fields_'+i" v-model="subcategories[item]"></v-text-field>
                                         </div>                                
                                 </v-form>
                                 </v-card-text>
@@ -191,6 +191,7 @@
             messageColor : 'red',
             category_id : '',
             message : '',
+            subcategories : {},
             categoryDetailsData : {},
             rules: [ (value) => !!value || 'This field is required' ],
             pagination: {
@@ -293,7 +294,7 @@
                     .then(function(response){
                             self.categoryDetailsData = {
                             categoryId : self.product.category_id,
-                            properties : self.categoryDetails.subCategories,
+                            properties : self.subcategories,
                             productId : response.data.Product._id
                         }   
                         self.getAllProducts();

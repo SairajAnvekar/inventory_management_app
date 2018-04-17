@@ -43,6 +43,16 @@
                   </router-link>
                 </v-list-tile-content>
               </v-list-tile> 
+              <v-list-tile @click="">
+                  <v-list-tile-action>
+                    <v-icon>home</v-icon>
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                    <router-link to="/manageInvoicing">
+                      <v-list-tile-title>Invoice</v-list-tile-title>
+                    </router-link>
+                  </v-list-tile-content>
+                </v-list-tile> 
       </v-list>
     </v-navigation-drawer> 
     <v-toolbar color="indigo" dark fixed app>

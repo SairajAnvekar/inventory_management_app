@@ -565,16 +565,6 @@
         },
       }
 
-function spliceObject(oldObject,keyArr) {
-    var newObj = {};
-    for(var x in oldObject){
-        if(keyArr.indexOf(x) == -1){
-            newObj[x] = oldObject[x];
-        }
-    }
-    return newObj
-}
-
 </script>
 
 

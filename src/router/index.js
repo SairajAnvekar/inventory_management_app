@@ -7,6 +7,8 @@ import Home from '@/components/pages/Home'
 import Product from '@/components/pages/Product'
 import Stock from '@/components/pages/Stock'
 import Users from '@/components/pages/Users'
+import Invoice from '@/components/pages/Invoice'
+
 // Global components
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -59,6 +61,18 @@ const router = new Router({
       name: 'Users',
       components: {
         default: Users,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+    {
+      path: '/manageInvoicing',
+      name: 'Invoice',
+      components: {
+        default: Invoice,
         header: Header,
         foter:Footer
       },
