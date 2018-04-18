@@ -139,19 +139,15 @@
                                     required>
                                     </v-text-field>
 
-                                    <v-text-field label="field"
-                                    v-model="categoryField"
-                                    required>
-                                    </v-text-field> <v-btn  color="blue" dark
-                                    small bottom right fab
-                                        @click="addField">
-                                        <v-icon>add</v-icon></v-btn>
-                                    
-                                    <v-text-field label="fields"
-                                    v-model="categoryFields"
-                                    :rules="rules"
-                                    required>
-                                    </v-text-field>
+                             <br>
+                                <v-select label="Field" chips tags solo prepend-icon="filter_list" append-icon="" clearable v-model="category.fields">
+                                <template slot="selection" slot-scope="data">
+                                    <v-chip close @input="remove(data.item)" :selected="data.selected">
+                                    <strong>{{ data.item }}</strong>&nbsp;                                 
+                                    </v-chip>
+                                </template>
+                                </v-select>
+
                                 </v-form>
                                 </v-card-text>
                                 <v-card-actions>
