@@ -33,16 +33,77 @@
                     item-key="name"
                     class="elevation-2">
                     <template slot="items" slot-scope="props">
-                    <td>{{ props.item.productName }}</td>
-                    <td class="text-xs-left">{{ props.item.quantity }}</td>
-                    <td class="text-xs-left">{{ props.item.batch_number}}</td>
-                    <td class="text-xs-left">{{ props.item.purchase_price }}</td>
-                    <td class="text-xs-left">{{ props.item.selling_price }}</td>
+                    <td>
+                        <v-edit-dialog :return-value.sync="props.item.productName" lazy> 
+                            {{ props.item.productName }}
+                          <v-select 
+                          :items="products"
+                          v-model="props.item.productId"
+                          item-value="_id"
+                          slot="input"
+                          label="Edit"
+                          single-line 
+                          counter 
+                          ></v-select> 
+                        </v-edit-dialog>
+                    </td>
+                    <td class="text-xs-left">
+                        <v-edit-dialog :return-value.sync="props.item.quantity" lazy> 
+                            {{ props.item.quantity }}
+                            <v-text-field
+                            slot="input"
+                            label="Edit"
+                            v-model="props.item.quantity"
+                            single-line
+                            counter 
+                          ></v-text-field>
+                        </v-edit-dialog>
+                    </td>
+                    <td class="text-xs-left">
+                        <v-edit-dialog :return-value.sync="props.item.batch_number" lazy> 
+                            {{ props.item.batch_number}}
+                            <v-text-field
+                            slot="input"
+                            label="Edit"
+                            v-model="props.item.batch_number"
+                            single-line
+                            counter 
+                          ></v-text-field>
+                        </v-edit-dialog>
+                    </td>
+                    <td class="text-xs-left">
+                        <v-edit-dialog :return-value.sync="props.item.purchase_price" lazy> 
+                            {{ props.item.purchase_price }}
+                            <v-text-field
+                            slot="input"
+                            label="Edit"
+                            v-model="props.item.purchase_price"
+                            single-line
+                            counter 
+                          ></v-text-field>
+                        </v-edit-dialog>
+                    </td>
+                    <td class="text-xs-left">
+                        <v-edit-dialog :return-value.sync="props.item.selling_price" lazy> 
+                            {{ props.item.selling_price }}
+                            <v-text-field
+                            slot="input"
+                            label="Edit"
+                            v-model="props.item.selling_price"
+                            single-line
+                            counter 
+                          ></v-text-field>
+                        </v-edit-dialog>
+                    </td>
                     <td class="text-xs-left">{{ props.item.date }}</td>
                     <td class="">
-                        <v-btn  color="orange" dark small  fab @click="deleteStock(props.item._id)">
-                        <v-icon>remove</v-icon></v-btn>
-                        </td>
+                        <v-btn icon class="mx-0" @click="updateStock(props.item)">
+                            <v-icon color="teal">edit</v-icon>
+                        </v-btn>
+                        <v-btn icon class="mx-0" @click="deleteStock(props.item._id)">
+                            <v-icon color="pink">delete</v-icon>
+                        </v-btn>
+                    </td>
                     </template>
                     </v-data-table>
                     </v-card>    
@@ -547,6 +608,37 @@
             },
             saveDate2 (date) {
                 this.$refs.menu2.save(date)
+            },
+            deleteStock(stockId){
+                var self = this;
+                 Axios.delete(`${apiURL}/api/v1/stock/` + stockId,{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                })
+                .then(function(response){
+                        self.showMessage('green', 'Stock item deleted successfully');
+                        self.getAllStock();
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    })
+            },
+            updateStock(item){
+                var self = this;
+                 Axios.put(`${apiURL}/api/v1/stock/` + item._id, {stock : item},{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                })
+                .then(function(response){
+                        self.showMessage('green', 'Stock item updated successfully');
+                        self.getAllStock();
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    })
+
             }
              
         },
