@@ -68,7 +68,9 @@
                     <div class="print-area">
                     <table class="profile-header" style="width:100%">
                         <tr>
-                        <td class="logo" rowspan='4'>logo</td>
+                        <td class="logo" rowspan='4'>                            
+                            <img class="logo" src="@/assets/image/logo.jpeg">
+                        </td>
                         <td colspan="4">
                             <h1>{{profile.display_name}}</h1>
                         </td>
@@ -906,7 +908,7 @@
 
 .logo{
   height: 150px;
-  width: 200px;
+  width: 190px;
 }
 .address{
    width: 60%;
