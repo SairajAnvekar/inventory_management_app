@@ -40,11 +40,96 @@
                             <v-icon color="pink">delete</v-icon>
                         </v-btn>
                     </td>
+                    <td class="">
+                        <v-btn  @click="viewInvoice(props.item)">
+                            view
+                        </v-btn>
+                    </td>
                     </template>
                     </v-data-table>
                     </v-card>    
                 </v-flex>
                 </v-layout>
+
+
+                <v-dialog v-model="viewDialog" fullscreen hide-overlay transition="dialog-bottom-transition" scrollable>
+                <v-card>
+                    <v-toolbar card dark color="primary">
+                    <v-btn icon @click.native="viewDialog = false" dark>
+                        <v-icon>close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>View Invoice</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn dark flat @click.native="print()">Print</v-btn>
+                        <v-btn dark flat>Download</v-btn>
+                    </v-toolbar-items>
+                    </v-toolbar>
+                    <div class="print-area">
+                    <table class="profile-header" style="width:100%">
+                        <tr>
+                        <td class="logo" rowspan='4'>logo</td>
+                        <td colspan="4">
+                            <h1>{{profile.display_name}}</h1>
+                        </td>
+                        <td rowspan='2'></td>
+                        </tr>
+                        <tr>
+                        <td class="address">
+                            <div>{{profile.address}}</div>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td> GSTIN : {{profile.gstin}} </td>
+                        <td> Phone: </td>
+                        </tr>
+                        <tr>
+                        <td> TIN: {{profile.tin}} </td>
+                        </tr>
+                    </table>
+
+                    <table class="branch-profile-header" style="width:100%">
+
+                        <tr>
+                        <td>Name : {{profile.branch.name}}</td>
+                        <td>DC No: {{profile.branch.dc_number}}</td>
+                        </tr>
+
+                        <tr>
+                        <td class="address">Address : {{profile.branch.address}}</td>
+                        <td>DC Date:</td>
+                        </tr>
+                        <tr>
+                        <td>GSTIN : {{profile.branch.gstin}}</td>
+                        <td>C.Ord No:</td>
+                        </tr>
+                    </table>
+
+
+
+                    <v-data-table :headers="viewInvoiceHeaders" :items="viewInvoiceItems" hide-actions class="elevation-1">
+                        <template slot="items" slot-scope="props">
+                        <td>{{ props.item.index + 1 }}</td>
+                        <td>{{productMap[props.item.productId].name }}</td>
+                        <td>{{props.item.batchNumber }}</td>
+                        <td>{{ props.item.quantity }}</td>
+                        <td v-for="(item,i) in subCategories">
+                            {{props.item[item]}}
+                        </td>
+                        <td>{{ props.item.sellingPrice }}</td>
+                        <td>{{ props.item.amount }}</td>
+                        </template>
+                    </v-data-table>
+                    <v-flex xs2 offset-xs10>
+                   
+                      Total: {{invoiceDetails.total_amount}}
+                  
+                    </v-flex>
+                    </div>
+                </v-card>
+
+                </v-dialog>
+
             </v-container> 
             <v-container  fluid  v-if="isInvoiceCreate">
                     <v-subheader class="text-xs-center headline mb-0">Create Invoice </v-subheader>
@@ -214,7 +299,7 @@
                                             <v-btn color="primary" @click.native="addInvoice()">add</v-btn>
                                             <v-btn @click="clearStockEntries">clear</v-btn>
                                             
-                                        <!-- <download-excel
+                                         <!--<download-excel
                                             class   = "btn btn-default"
                                             :data   = "invoiceJSONData"
                                             :fields = "invoiceJSONFields"
@@ -301,10 +386,11 @@
                 totalAmount : 0,
                 subCategories : [],
                 salesPersonId : "",
-                customerId : "",
+                customerId : "",            
                 items : [],
                 isGST : false
             },
+            viewDialog: false,
             products: [],
             invoiceItems:[],
             categories: [],
@@ -317,7 +403,8 @@
                 {text : 'Sold To',"value" : 'customer'},
                 {text : 'Date Of Sale',"value" : 'dateOfSale'},
                 {text : 'Total Amount',"value" : 'totalAmount'},
-                {text : 'Action',"value" : 'action'}
+                {text : 'Action',"value" : 'action'},
+                {text : 'Edit',"value" : 'edit'}
                 ],
             purchaseHeaders: [
                 {
@@ -344,7 +431,13 @@
             invoiceHeaders : [],
             invoiceJSONData : [],
             invoiceJSONFields : {},
-            invoiceCount : 0
+            viewInvoiceHeaders:[],// view invoice move to new component
+            viewInvoiceItems:[],
+            subCategories:[],
+            profile:[],
+            invoiceCount : 0,
+            productMap:{},
+            invoiceDetails:{}
 
             }
         },
@@ -359,6 +452,7 @@
             this.invoiceHeaders = this.invoiceHeaders.concat(this.invoiceHeaderPrefix);
             this.invoiceHeaders = this.invoiceHeaders.concat(this.invoiceHeaderPostfix);
             this.handleJSONFields();
+            this.getProfile();
         },
         methods: {
             getAllCustomers (context) {
@@ -400,7 +494,13 @@
                 headers: {
                     'Authorization': Authentication.getAuthenticationHeader(this)
                 }
-                }).then(({data}) => (this.handleProductsResponse(data)))
+            }).then(({data}) => (
+                this.handleProductsResponse(data),
+                data.forEach((product) => {
+                    this.productMap[product._id] = product
+                })
+            
+            ))
             },
             getAllCategories (context) {
                 Axios.get(`${apiURL}/api/v1/category/`, {
@@ -435,7 +535,7 @@
              addNewInvoiceItemEntry(){
                  var temp = JSON.parse(JSON.stringify(myInvoceItem));
                  var index = this.invoiceItems.length;
-                 temp.index = index;
+                 temp.index = index;                                 
                  this.invoiceItems.push(temp);
              },
              deleteListItem(index){
@@ -468,6 +568,7 @@
                         }
                     })
                     .then(function(response){
+                            self.invoice.subCategories = self.categoryItems;
                             Axios.post(`${apiURL}/api/v1/invoice/`, {invoice : self.invoice},{
                                 headers: {
                                 'Authorization': Authentication.getAuthenticationHeader(self)
@@ -607,13 +708,14 @@
                         fields = obj.fields;
                     }
                 });  
+                console.log(fields);
                 this.categoryItems = fields;
                 self.invoiceHeaders = [];
                 self.invoiceHeaders = self.invoiceHeaders.concat(self.invoiceHeaderPrefix);
                 this.categoryItems.forEach(function(obj){
                     self.invoiceHeaders.push( { text: obj, value: obj })
                 })
-                self.invoiceHeaders = self.invoiceHeaders.concat(self.invoiceHeaderPostfix);
+                self.invoiceHeaders = self.invoiceHeaders.concat(self.invoiceHeaderPostfix);      
              },
              handleCategoryDetailsResponse(data){
                 var self = this;
@@ -746,7 +848,33 @@
                         self.message = data.message
                         self.snackbar = true
                     })
-             }
+             },             
+           viewInvoice(item){
+              this.invoiceDetails = item;
+              this.viewInvoiceHeaders= [];
+              this.viewInvoiceHeaders.push( { text: 'SR NO', value: 'sno' }); 
+              this.viewInvoiceHeaders = this.viewInvoiceHeaders.concat(this.invoiceHeaderPrefix);
+              for(var key in item.subCategories){                      
+                  this.viewInvoiceHeaders.push( { text: item.subCategories[key], value: item.subCategories[key] })
+              } 
+              this.viewInvoiceHeaders.push( { text: 'Selling Price', value: 'sellingPrice' });
+              this.viewInvoiceHeaders.push( { text: 'Amount', value: 'amount' })  
+              this.viewInvoiceItems= item.invoice_details;
+              this.subCategories = item.subCategories;                 
+              this.viewDialog =true;
+           },
+            getProfile (context) {
+                Axios.get(`${apiURL}/api/v1/profile/`, {
+                headers: {
+                'Authorization': Authentication.getAuthenticationHeader(this)
+                }
+                }).then(({data}) => (
+                this.profile=data[0] ? data[0] : {} 
+                ))
+            }, 
+            print(){
+                window.print();
+            }      
         },
         watch: {
             currentPrice : function(newData,oldData){
@@ -756,9 +884,9 @@
             currentQty : function(newData,oldData){
                 this.currentStockItem.amount = this.currentPrice * this.currentQty;
                 this.calculateTotal();
-                this.refreshStockQuantity();
+                this.refreshStockQuantity();                
             },
-            invoiceItems : function(newData,oldData) {
+            invoiceItems : function(newData,oldData) {            
                 this.calculateTotal();
             },
             categoryId: function (newId, oldId) {
@@ -770,9 +898,36 @@
             }
         },
       }
-
-
-
 </script>
+<style>
+.profile-header{
+    border: 1px solid;
+}
+
+.logo{
+  height: 150px;
+  width: 200px;
+}
+.address{
+   width: 60%;
+}
+
+@media print {
+ /* styles go here */
+ .application--wrap{
+     display: none;
+ }
+ .toolbar__content{
+     display: none;
+ }
+ .table__overflow{
+     overflow-x: visible;
+     overflow-y:  visible;
+ }
+ .logo{
+     border: 1px solid;
+ }
+}
+</style>
 
 

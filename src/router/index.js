@@ -8,6 +8,7 @@ import Product from '@/components/pages/Product'
 import Stock from '@/components/pages/Stock'
 import Users from '@/components/pages/Users'
 import Invoice from '@/components/pages/Invoice'
+import Profile from '@/components/pages/Profile'
 
 // Global components
 import Header from '@/components/Header'
@@ -73,6 +74,19 @@ const router = new Router({
       name: 'Invoice',
       components: {
         default: Invoice,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+
+      {
+      path: '/profile',
+      name: 'Profile',
+      components: {
+        default: Profile,
         header: Header,
         foter:Footer
       },
