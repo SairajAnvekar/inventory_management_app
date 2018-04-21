@@ -626,6 +626,7 @@
             },
             updateStock(item){
                 var self = this;
+                loading();
                  Axios.put(`${apiURL}/api/v1/stock/` + item._id, {stock : item},{
                     headers: {
                     'Authorization': Authentication.getAuthenticationHeader(this)
@@ -633,6 +634,7 @@
                 })
                 .then(function(response){
                         self.showMessage('green', 'Stock item updated successfully');
+                        removeLoader();
                         self.getAllStock();
                     }).catch(({response: {data}}) => {
                         self.message = data.message

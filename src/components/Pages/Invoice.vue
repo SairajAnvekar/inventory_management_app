@@ -69,24 +69,24 @@
                     <table class="profile-header" style="width:100%">
                         <tr>
                         <td class="logo" rowspan='4'>                            
-                            <img class="logo" src="@/assets/image/logo.jpeg">
+                            <img class="logo" src="@/assets/image/VSlogo.png">
                         </td>
                         <td colspan="4">
-                            <h1>{{profile.display_name}}</h1>
+                            <h1 class="text-align-center">{{profile.display_name}}</h1>
                         </td>
                         <td rowspan='2'></td>
                         </tr>
                         <tr>
-                        <td class="address">
+                        <td class="address text-align-center">
                             <div>{{profile.address}}</div>
                         </td>
                         </tr>
                         <tr>
-                        <td> GSTIN : {{profile.gstin}} </td>
-                        <td> Phone: </td>
+                        <td class="text-align-center"> GSTIN : {{profile.gstin}} </td>
+                        <td class="text-align-center"> Phone: </td>
                         </tr>
                         <tr>
-                        <td> TIN: {{profile.tin}} </td>
+                        <td class="text-align-center"> TIN: {{profile.tin}} </td>
                         </tr>
                     </table>
 
@@ -109,14 +109,14 @@
 
 
 
-                    <v-data-table :headers="viewInvoiceHeaders" :items="viewInvoiceItems" hide-actions class="elevation-1">
+                    <v-data-table :headers="viewInvoiceHeaders" :items="viewInvoiceItems" hide-actions class="elevation-1 condensed-data-table">
                         <template slot="items" slot-scope="props">
                         <td>{{ props.item.index + 1 }}</td>
                         <td>{{productMap[props.item.productId].name }}</td>
                         <td>{{props.item.batchNumber }}</td>
                         <td>{{ props.item.quantity }}</td>
-                        <td v-for="(item,i) in subCategories">
-                            {{props.item[item]}}
+                        <td v-for="(item,i) in subCategories" class="" >
+                                {{props.item[item]}}
                         </td>
                         <td>{{ props.item.sellingPrice }}</td>
                         <td>{{ props.item.amount }}</td>
@@ -914,6 +914,21 @@
    width: 60%;
 }
 
+.padding-0{
+  padding:0 !important;
+}
+.condensed-data-table thead th{
+    padding : 0!important;
+    text-align: center !important ;
+}
+
+.condensed-data-table tbody td{
+    padding : 0 !important;
+    text-align: center !important;
+}
+.text-align-center {
+    text-align: center !important;
+}
 @media print {
  /* styles go here */
  .application--wrap{
@@ -927,7 +942,7 @@
      overflow-y:  visible;
  }
  .logo{
-     border: 1px solid;
+     /* border: 1px solid; */
  }
 }
 </style>
