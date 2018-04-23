@@ -83,7 +83,7 @@
                         </tr>
                         <tr>
                         <td class="text-align-center"> GSTIN : {{profile.gstin}} </td>
-                        <td class="text-align-center"> Phone: </td>
+                        <td class="text-align-center"> Phone: {{profile.phone}}</td>
                         </tr>
                         <tr>
                         <td class="text-align-center"> TIN: {{profile.tin}} </td>
@@ -93,16 +93,16 @@
                     <table class="branch-profile-header" style="width:100%">
 
                         <tr>
-                        <td>Name : {{profile.branch.name}}</td>
-                        <td>DC No: {{profile.branch.dc_number}}</td>
+                        <td>Name : {{customerDetails.text}}</td>
+                        <td>DC No: {{invoice.invoiceNumber}}</td>
                         </tr>
 
                         <tr>
-                        <td class="address">Address : {{profile.branch.address}}</td>
-                        <td>DC Date:</td>
+                        <td class="address">Address : {{customerDetails.address}}</td>
+                        <td>DC Date: {{invoiceDetails.date_of_sale}}</td>
                         </tr>
                         <tr>
-                        <td>GSTIN : {{profile.branch.gstin}}</td>
+                        <td>GSTIN : {{customerDetails.gstin}}</td>
                         <td>C.Ord No:</td>
                         </tr>
                     </table>
@@ -439,7 +439,8 @@
             profile:[],
             invoiceCount : 0,
             productMap:{},
-            invoiceDetails:{}
+            invoiceDetails:{},
+            customerDetails: {}
 
             }
         },
@@ -611,7 +612,7 @@
                  self.customers = [];
                  if(data){
                  data.forEach(function(obj){
-                    self.customers.push({"text":obj.name,"_id":obj._id});
+                    self.customers.push({"text":obj.name,"_id":obj._id,"address":obj.address,"gstin":obj.gstin});
                  });
                 }
 
@@ -852,6 +853,13 @@
                     })
              },             
            viewInvoice(item){
+              var customerTemp = {};
+              this.customers.forEach(function(obj){
+                  if(obj._id == item.customer_id){
+                    customerTemp = obj;
+                  }
+              })
+              this.customerDetails = customerTemp;
               this.invoiceDetails = item;
               this.viewInvoiceHeaders= [];
               this.viewInvoiceHeaders.push( { text: 'SR NO', value: 'sno' }); 
@@ -941,9 +949,7 @@
      overflow-x: visible;
      overflow-y:  visible;
  }
- .logo{
-     /* border: 1px solid; */
- }
+
 }
 </style>
 

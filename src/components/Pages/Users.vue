@@ -29,7 +29,7 @@
                         <v-subheader class="text-xs-center">Your Suppliers </v-subheader>
                         <v-spacer></v-spacer>
                     <v-layout row wrap >
-                    <v-flex d-flex xs10 sm10 md10>     
+                    <v-flex d-flex xs11 sm11 md11>     
                         <v-data-table
                         :headers="headersSupplier"
                         :items="suppliers"
@@ -37,14 +37,69 @@
                         item-key="name"
                         class="elevation-1">
                         <template slot="items" slot-scope="props">
-                        <td>{{ props.item.name }}</td>
-                        <td class="text-xs-left">{{ props.item.address }}</td>
-                        <td class="text-xs-left">{{ props.item.email }}</td>
-                        <td class="text-xs-left">{{ props.item.telephone_number }}</td>
+                        <td>
+                            <v-edit-dialog :return-value.sync="props.item.name" lazy> 
+                                {{ props.item.name }}
+                                <v-text-field
+                                slot="input"
+                                label="Edit"
+                                v-model="props.item.name"
+                                single-line
+                                counter ></v-text-field>
+                            </v-edit-dialog>
+                        </td>
+                        <td class="text-xs-left">
+                            <v-edit-dialog :return-value.sync="props.item.address" lazy> 
+                                {{ props.item.address }}
+                                <v-text-field
+                                slot="input"
+                                label="Edit"
+                                v-model="props.item.address"
+                                single-line
+                                counter ></v-text-field>
+                            </v-edit-dialog>
+                        </td>
+                        <td class="text-xs-left">
+                            <v-edit-dialog :return-value.sync="props.item.email" lazy> 
+                                {{ props.item.email }}
+                                <v-text-field
+                                slot="input"
+                                label="Edit"
+                                v-model="props.item.email"
+                                single-line
+                                counter ></v-text-field>
+                            </v-edit-dialog>
+                        </td>
+                        <td class="text-xs-left">
+                            <v-edit-dialog :return-value.sync="props.item.telephone_number" lazy> 
+                                {{ props.item.telephone_number }}
+                                <v-text-field
+                                slot="input"
+                                label="Edit"
+                                v-model="props.item.telephone_number"
+                                single-line
+                                counter ></v-text-field>
+                            </v-edit-dialog>
+                        </td>
+                        <td>
+                            <v-edit-dialog :return-value.sync="props.item.gstin" lazy> 
+                                {{ props.item.gstin }}
+                                <v-text-field
+                                slot="input"
+                                label="Edit"
+                                v-model="props.item.gstin"
+                                single-line
+                                counter ></v-text-field>
+                            </v-edit-dialog>
+                        </td>
                         <td class="">
-                            <v-btn  color="orange" dark small  fab @click="deleteSupplier(props.item._id)">
-                            <v-icon>remove</v-icon></v-btn>
-                            </td>
+                            <v-btn icon class="mx-0" @click="updateSupplier(props.item)">
+                                <v-icon color="teal">edit</v-icon>
+                            </v-btn>
+                            <v-btn icon class="mx-0" @click="deleteSupplier(props.item._id)">
+                                <v-icon color="pink">delete</v-icon>
+                            </v-btn>    
+                        </td>
                         </template>
                         </v-data-table>
                     </v-flex>
@@ -81,13 +136,17 @@
                                         :rules="rules"
                                         required>
                                         </v-text-field>
-
+                                        
                                         <v-text-field label="Telephone Number"
                                         v-model="supplier.telephoneNumber"
                                         prepend-icon="account_box"
                                         :rules="rules"
                                         required>
-                                        </v-text-field>                              
+                                        </v-text-field> 
+                                        <v-text-field label="GSTIN"
+                                        v-model="supplier.gstinNumber"
+                                        prepend-icon="account_box">
+                                        </v-text-field>                             
                                 </v-form>
                                 </v-card-text>
                                 <v-card-actions>
@@ -112,13 +171,68 @@
                                 item-key="text"
                                 class="elevation-1">
                                     <template slot="items" slot-scope="props">
-                                        <td>{{ props.item.name }}</td>
-                                        <td class="text-xs-left">{{ props.item.address }}</td>
-                                        <td class="text-xs-left">{{ props.item.email }}</td>
-                                        <td class="text-xs-left">{{ props.item.telephone_number }}</td>
+                                        <td>
+                                            <v-edit-dialog :return-value.sync="props.item.name" lazy> 
+                                                {{ props.item.name }}
+                                                <v-text-field
+                                                slot="input"
+                                                label="Edit"
+                                                v-model="props.item.name"
+                                                single-line
+                                                counter ></v-text-field>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td class="text-xs-left">
+                                            <v-edit-dialog :return-value.sync="props.item.address" lazy> 
+                                                {{ props.item.address }}
+                                                <v-text-field
+                                                slot="input"
+                                                label="Edit"
+                                                v-model="props.item.address"
+                                                single-line
+                                                counter ></v-text-field>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td class="text-xs-left">
+                                            <v-edit-dialog :return-value.sync="props.item.email" lazy> 
+                                                {{ props.item.email }}
+                                                <v-text-field
+                                                slot="input"
+                                                label="Edit"
+                                                v-model="props.item.email"
+                                                single-line
+                                                counter ></v-text-field>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td class="text-xs-left">
+                                            <v-edit-dialog :return-value.sync="props.item.telephone_number" lazy> 
+                                                {{ props.item.telephone_number }}
+                                                <v-text-field
+                                                slot="input"
+                                                label="Edit"
+                                                v-model="props.item.telephone_number"
+                                                single-line
+                                                counter ></v-text-field>
+                                            </v-edit-dialog>
+                                        </td>
+                                        <td class="text-xs-left">
+                                            <v-edit-dialog :return-value.sync="props.item.gstin" lazy> 
+                                                {{ props.item.gstin }}
+                                                <v-text-field
+                                                slot="input"
+                                                label="Edit"
+                                                v-model="props.item.gstin"
+                                                single-line
+                                                counter 
+                                              ></v-text-field>
+                                            </v-edit-dialog>
+                                        </td>
                                         <td class="">
-                                            <v-btn  color="orange" dark small  fab @click="deleteCustomer(props.item._id)">
-                                                <v-icon>remove</v-icon>
+                                            <v-btn icon class="mx-0" @click="updateCustomer(props.item)">
+                                                <v-icon color="teal">edit</v-icon>
+                                            </v-btn>
+                                            <v-btn icon class="mx-0" @click="deleteCustomer(props.item._id)">
+                                                    <v-icon color="pink">delete</v-icon>
                                             </v-btn>
                                         </td>
                                     </template>
@@ -150,7 +264,7 @@
                                         :rules="rules"
                                         required>
                                         </v-text-field>
-
+                                        
                                         <v-text-field label="Email Id"
                                         v-model="customer.emailId"
                                         prepend-icon="account_box"
@@ -163,6 +277,11 @@
                                         prepend-icon="account_box"
                                         :rules="rules"
                                         required>
+                                        </v-text-field>
+
+                                        <v-text-field label="GSTIN "
+                                        v-model="customer.gstinNumber"
+                                        prepend-icon="account_box">
                                         </v-text-field>
                                 </v-form>
                                 </v-card-text>
@@ -214,7 +333,9 @@
                 },
                 { text: 'Address', value: 'address' },
                 { text: 'Email Id', value: 'emailId' },
-                {text : 'Telephone Number',"value" : 'telephoeNumber'}
+                {text : 'Telephone Number',"value" : 'telephoeNumber'},
+                {text : 'GSTIN ',"value" : 'gstin'},
+                {text : 'Actions ',"value" : 'actions'}                
                 ],
             headersCustomer : [
                 {
@@ -224,19 +345,23 @@
                 },
                 { text: 'Address', value: 'address' },
                 { text: 'Email Id', value: 'emailId' },
-                {text : 'Telephone Number',"value" : 'telephoeNumber'}                
+                {text : 'Telephone Number',"value" : 'telephoeNumber'},
+                {text : 'GSTIN ',"value" : 'gstin'},
+                {text : 'Actions ',"value" : 'actions'}                                
                 ], 
             supplier : {
                 name : '',
                 address : '',
                 emailId : '',
-                telephoneNumber : ''
+                telephoneNumber : '',
+                gstinNumber : ''
             },
             customer : {
                 name : '',
                 address : '',
                 emailId : '',
-                telephoneNumber : ''
+                telephoneNumber : '',
+                gstinNumber : ''
             }
           }
         },
@@ -250,7 +375,7 @@
                 headers: {
                     'Authorization': Authentication.getAuthenticationHeader(this)
                 }
-                }).then(({data}) => (this.suppliers = data))
+                }).then(({data}) => (this.handleSupplierGet(data)))
             },
             getAllCustomers (context) {
                 Axios.get(`${apiURL}/api/v1/customer/`, {
@@ -258,7 +383,7 @@
                     'Authorization': Authentication.getAuthenticationHeader(this)
                 }
                 }).then(({data}) => (
-                    this.customers = data
+                    this.handleCustomerGet(data)
                 ))
             },
             clear () {
@@ -304,7 +429,6 @@
                     });
              },
              deleteSupplier(supplierId){
-                 console.log(supplierId)
                  var self = this;
                  Axios.delete(`${apiURL}/api/v1/supplier/` + supplierId,{
                     headers: {
@@ -320,7 +444,6 @@
                     })
              },
              deleteCustomer(customerId){
-                 console.log(customerId)
                  var self = this;
                  Axios.delete(`${apiURL}/api/v1/customer/` + customerId,{
                     headers: {
@@ -343,8 +466,59 @@
                     case 3 : this.isCustomerAdd = true; break;
                     case 4 : this.isCustomerView = true; break;
                 }
+             },
+             updateCustomer(custObj){
+                 var customerId = custObj._id
+                 var self = this;
+                 Axios.put(`${apiURL}/api/v1/customer/` + customerId,{customer : custObj},{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                }).then(function(response){
+                        self.showMessage('green', 'Customer updated successfully');
+                        self.getAllCustomers();
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    })
+             },
+             updateSupplier(suppObj){
+                 var supplierId = suppObj._id
+                 var self = this;
+                 Axios.put(`${apiURL}/api/v1/supplier/` + supplierId,{supplier : suppObj},{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                }).then(function(response){
+                        self.showMessage('green', 'Supplier updated successfully');
+                        self.getAllSuppliers();
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    })
+             },
+             handleCustomerGet(data){
+                var self = this;
+                data.forEach(function(obj){
+                    for (var x in obj){
+                        if(obj[x] == null){
+                            obj[x] = "N/A";
+                        }
+                    }
+                })
+                this.customers = data
+             },
+             handleSupplierGet(data){
+                var self = this;
+                data.forEach(function(obj){
+                    for (var x in obj){
+                        if(obj[x] == null){
+                            obj[x] = "N/A";
+                        }
+                    }
+                })
+                this.suppliers = data
              }
-             
         },
         watch: {
 
