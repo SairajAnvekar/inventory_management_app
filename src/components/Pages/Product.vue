@@ -20,6 +20,12 @@
                               <v-list-tile @click.native="handleNavigationMenu(4)">
                                     <v-list-tile-title>View Category</v-list-tile-title>
                               </v-list-tile>
+                              <v-list-tile @click.native="handleNavigationMenu(5)">
+                                    <v-list-tile-title>Add Tax</v-list-tile-title>
+                              </v-list-tile>
+                              <v-list-tile @click.native="handleNavigationMenu(6)">
+                                    <v-list-tile-title>View Tax</v-list-tile-title>
+                              </v-list-tile>
                             </v-list>
                     </v-menu>
             </v-toolbar>
@@ -159,6 +165,63 @@
                             </v-flex>
                         </v-layout>
                     </v-container>
+
+                    <v-container  v-if="isTaxView">
+                            <v-subheader class="text-xs-center">Your Company Tax</v-subheader>
+                            <v-spacer></v-spacer>
+                        <v-layout row wrap v-if="">
+                            <v-flex d-flex xs10 sm10 md10>  
+                                <v-data-table
+                                :headers="headersCompanyTax"
+                                :items="companyTaxList"
+                                :pagination.sync="pagination"
+                                item-key="text"
+                                class="elevation-1">
+                                    <template slot="items" slot-scope="props">
+                                        <td>{{ props.item.text }}</td>
+                                        <td>{{ props.item.value }} %</td>
+                                        <td class="">
+                                            <v-btn  icon class="mx-0" @click="deleteTax(props.item._id)">
+                                                <v-icon color="pink">delete</v-icon>
+                                            </v-btn>
+                                        </td>
+                                    </template>
+                                </v-data-table>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
+
+                    <v-container  v-if="isTaxAdd">
+                            <v-layout row wrap v-if="">
+                                <v-flex d-flex xs10 sm10 md10>    
+                                    <v-card class="elevation-12" >
+                                        <v-toolbar dark color="primary">
+                                            <v-toolbar-title>Add Tax</v-toolbar-title>
+                                            <v-spacer></v-spacer>
+                                        </v-toolbar>
+                                    <v-card-text>
+                                    <v-form ref="form">
+                                        <v-text-field label="Name"
+                                        v-model="companyTax.name"
+                                        :rules="rules"
+                                        required>
+                                        </v-text-field>
+                                        <v-text-field label="Percentage"
+                                        v-model="companyTax.value"
+                                        :rules="rules"
+                                        required>
+                                        </v-text-field>
+                                    </v-form>
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="primary" @click.native="addTax()">add</v-btn>
+                                        <v-btn @click="clear">clear</v-btn>
+                                    </v-card-actions>
+                                    </v-card>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
                           <v-snackbar bottom="bottom" color="messageColor lighten-1" v-model="snackbar">
                             {{ message }}
                          </v-snackbar>
@@ -181,6 +244,8 @@
             isProductView : true,
             isCategoryAdd: false,
             isCategoryView : false,
+            isTaxAdd : false,
+            isTaxView : false,
             categoryField : '',
             categoryFields : '',
             categoryItems : [],
@@ -195,6 +260,7 @@
             },
             products: [],
             categories: [],
+            companyTaxList : [],
             headers: [
                 {
                     text: 'Name',
@@ -213,6 +279,11 @@
                 },
                 {text : 'Action',"value" : 'actions'}
                 ], 
+            headersCompanyTax :[
+                { text: 'Name',align: 'left',value: 'name'},
+                { text: 'Percentage',align: 'left',value: 'percentage'},
+                {text : 'Action',"value" : 'actions'}
+            ] ,  
             product : {
                 name : '',
                 description : '',
@@ -224,12 +295,17 @@
             },
             categoryDetails :{
                 subCategories : []
+            },
+            companyTax : {
+                name : "",
+                value : 0
             }
           }
         },
         mounted () {
             this.getAllCategories();
             this.getAllProducts();
+            this.getAllcompanyTaxList();
         },
         methods: {
             getAllProducts (context) {
@@ -246,6 +322,15 @@
                 }
                 }).then(({data}) => (
                     this.handleCategoriesResponse(data)
+                ))
+            },
+            getAllcompanyTaxList (context) {
+                Axios.get(`${apiURL}/api/v1/companyTax/`, {
+                headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                }
+                }).then(({data}) => (
+                    this.handleCompanyTaxResponse(data)
                 ))
             },
             clear () {
@@ -275,7 +360,22 @@
                         self.$refs.form.reset();
                         showMessage('green', 'Category added successfully');
                         self.getAllCategories();
-                    }).catch(({response: {data}}) => {
+                    }).catch(function(data){
+                        self.message = data.message
+                    })
+             },
+             addTax(){
+                 var self = this;
+                    Axios.post(`${apiURL}/api/v1/companyTax/`, {companyTax:this.companyTax},{
+                        headers: {
+                        'Authorization': Authentication.getAuthenticationHeader(this)
+                        }
+                    })
+                    .then(function(response){
+                        self.getAllcompanyTaxList();
+                        self.$refs.form.reset();
+                        showMessage('green', 'Company Tax added successfully');
+                    }).catch(function(data){
                         self.message = data.message
                     })
              },
@@ -305,6 +405,15 @@
                  if(data){
                  data.forEach(function(obj){
                     self.categories.push({"text":obj.name,"_id":obj._id,"fields":obj.fields});
+                 });
+                }
+             },
+             handleCompanyTaxResponse(data){
+                var self = this;
+                 self.companyTaxList = [];
+                 if(data){
+                 data.forEach(function(obj){
+                    self.companyTaxList.push({"text":obj.name,"_id":obj._id,"value":obj.value});
                  });
                 }
              },
@@ -350,13 +459,31 @@
                         self.snackbar = true
                     })
              },
+             deleteTax(taxId){
+                 console.log(taxId)
+                 var self = this;
+                 Axios.delete(`${apiURL}/api/v1/companyTax/` + taxId,{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                })
+                .then(function(response){
+                    self.getAllcompanyTaxList();
+                        self.showMessage('green', 'Company tax has been deleted successfully');
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    })
+             },
              handleNavigationMenu(visibleFlag){
-                this.isProductAdd = this.isProductView = this.isCategoryAdd = this.isCategoryView = false;
+                this.isProductAdd = this.isProductView = this.isCategoryAdd = this.isCategoryView = this.isTaxAdd = this.isTaxView = false;
                 switch(visibleFlag){
                     case 1: this.isProductView = true; break;
                     case 2 : this.isProductAdd = true; break;
                     case 3 : this.isCategoryAdd = true; break;
                     case 4 : this.isCategoryView = true; break;
+                    case 5 : this.isTaxAdd = true; break;
+                    case 6 : this.isTaxView = true; break;
                 }
              }
              

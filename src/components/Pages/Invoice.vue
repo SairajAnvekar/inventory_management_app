@@ -35,6 +35,7 @@
                     <td class="text-xs-left">{{ props.item.customerName}}</td>
                     <td class="text-xs-left">{{ props.item.date_of_sale }}</td>
                     <td class="text-xs-left">{{ props.item.total_amount }}</td>
+                    <td class="text-xs-left">{{ props.item.status }}</td>
                     <td class="">
                         <v-btn icon class="mx-0" @click="deleteInvoice(props.item._id)">
                             <v-icon color="pink">delete</v-icon>
@@ -122,10 +123,15 @@
                         <td>{{ props.item.amount }}</td>
                         </template>
                     </v-data-table>
+                    
                     <v-flex xs2 offset-xs10>
-                   
-                      Total: {{invoiceDetails.total_amount}}
-                  
+                            Net Amount : {{invoiceDetails.netAmount}}
+                    </v-flex>
+                    <v-flex xs2 v-for="(item,i) in invoiceDetails.taxListView" offset-xs10> {{item}}</v-flex> 
+                    <v-flex xs2  offset-xs10 v-if="invoiceDetails.isPending">Paid Amount :  {{invoiceDetails.amountPaid}}</v-flex> 
+                    <v-flex xs2  offset-xs10 v-if="invoiceDetails.isPending">Pending Amount :  {{invoiceDetails.total_amount - invoiceDetails.amountPaid}}</v-flex> 
+                    <v-flex xs2 offset-xs10>
+                      Grand Total : {{invoiceDetails.total_amount}}
                     </v-flex>
                     </div>
                 </v-card>
@@ -148,6 +154,28 @@
                                         single-line></v-text-field>
                                     </v-flex>
                                 </v-layout>
+                                <v-layout row> 
+                                <v-flex xs3>        
+                                        <v-select
+                                        v-model="selectedTaxList"
+                                        label="Select Tax"
+                                        chips
+                                        @input="activeSelectTaxTag()"
+                                        tags
+                                        :items="companySelectList"
+                                        >
+                                        <template slot="selection" slot-scope="data">
+                                            <v-chip
+                                                  @input="data.parent.selectItem(data.name)"
+                                                  class="chip--select-multi"
+                                                  :key="JSON.stringify(data.name)"
+                                                >
+                                                {{data.item}}
+                                            </v-chip>
+                                        </template>
+                                    </v-select>
+                                    </v-flex>
+                                   </v-layout> 
                                 <v-layout row justify-space-around> 
                                     <v-flex xs2>
                                         <v-select
@@ -202,7 +230,8 @@
                                             <v-date-picker v-model="invoice.dateOfSale"  @change="saveDate1" no-title scrollable>
                                             </v-date-picker>
                                           </v-menu>
-                                    </v-flex>        
+                                    </v-flex>     
+                                    
                                     <v-flex xs3>        
                                     <v-btn  color="orange" dark small  fab @click="addNewInvoiceItemEntry()">
                                             <v-icon>add</v-icon>
@@ -272,27 +301,49 @@
                                             </td>
                                         </tr>
                                         </template>
-                                        <template slot="footer">
-                                        <td colspan="100%">
-                                        <v-layout row wrap align-end >   
-                                        <v-flex xs3 fluid px-0>
-                                            <v-checkbox
-                                            label="GST"
-                                            @change="activeGSTBox()"
-                                            v-model="invoice.isGST"
-                                            ></v-checkbox>
-                                        </v-flex>
-                                        <v-flex xs3 offset-xs6>
-                                                <v-text-field 
-                                                label="Total Amount"
-                                                v-model="invoice.totalAmount"
-                                                readonly >
-                                                </v-text-field>
-                                        </v-flex> 
-                                        </v-layout>
-                                        </td>
-                                        </template>
                                         </v-data-table>
+                                        <div class="text-xs-center pt-2">
+                                                <table style="width:100%">
+                                                        <tr>
+                                                            <td colspan=3>
+                                                               
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                                <td>    
+                                                                        <v-flex xs4>GST</v-flex>
+                                                                            <v-checkbox
+                                                                            @change="activeGSTBox()"
+                                                                            v-model="invoice.isGST"
+                                                                            ></v-checkbox>
+                                                                    </td>
+                                                                    <td > 
+                                                                        <v-flex xs6>Pending Invoice</v-flex>
+                                                                        <v-checkbox
+                                                                        @change="activeIsPaid()"
+                                                                        v-model="isPending"
+                                                                        ></v-checkbox>
+                                                                    </td>
+                                                            <td >
+                                                                    <v-flex v-if="invoice.isGST" xs4  offset-xs6 v-for="(item,i) in invoiceTaxList">{{item}}</v-flex>
+                                                                    <v-flex xs4 offset-xs7>
+                                                                            <v-text-field v-if="isPending" 
+                                                                            label="Paid Amount"
+                                                                            @change="validatePendingAmount()"
+                                                                            v-model="paidAmount">
+                                                                            </v-text-field>
+                                                                            </v-flex>
+                                                                    <v-flex xs4 offset-xs7>
+                                                                    <v-text-field 
+                                                                    label="Total Amount"
+                                                                    v-model="invoice.totalAmount"
+                                                                    readonly >
+                                                                    </v-text-field>
+                                                                    </v-flex>
+                                                            </td>
+                                                        </tr>
+                                                    </table> 
+                                        </div>
                                         </v-card>
                                         </v-flex>
                                         </v-layout>
@@ -355,6 +406,9 @@
             isPurchaseView : false,
             categoryField : '',
             categoryFields : '',
+            selectedTaxList : [],
+            invoiceTaxList : [],
+            taxPercentage : 0,
             categoryItems : [],
             purchaseList : [],
             messageColor : 'red',
@@ -380,6 +434,8 @@
             currentAmount : 0,
             currentProduct : "",
             backupTotalAmount : 0,
+            isPending : false,
+            paidAmount : 0,
             invoiceList : [],
             invoice :{
                 category_id : '',
@@ -390,7 +446,8 @@
                 salesPersonId : "",
                 customerId : "",            
                 items : [],
-                isGST : false
+                isGST : false,
+                taxList : []
             },
             viewDialog: false,
             products: [],
@@ -405,6 +462,7 @@
                 {text : 'Sold To',"value" : 'customer'},
                 {text : 'Date Of Sale',"value" : 'dateOfSale'},
                 {text : 'Total Amount',"value" : 'totalAmount'},
+                {text : 'Payment Status',"value" : 'status'},
                 {text : 'Action',"value" : 'action'},
                 {text : 'Edit',"value" : 'edit'}
                 ],
@@ -432,6 +490,8 @@
             ],
             invoiceHeaders : [],
             invoiceJSONData : [],
+            companyTaxList : [],
+            companySelectList : [],
             invoiceJSONFields : {},
             viewInvoiceHeaders:[],// view invoice move to new component
             viewInvoiceItems:[],
@@ -448,6 +508,7 @@
             this.getAllCustomers();
             this.getAllProducts();
             this.getAllInvoices();
+            this.getAllcompanyTaxList();
             this.getAllSalesPersons();
             this.addNewInvoiceItemEntry();
             this.getAllCategories();
@@ -523,6 +584,15 @@
                     this.handleCategoryDetailsResponse(data)
                 ))
             },
+            getAllcompanyTaxList (context) {
+                Axios.get(`${apiURL}/api/v1/companyTax/`, {
+                headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                }
+                }).then(({data}) => (
+                    this.handleCompanyTaxResponse(data)
+                ))
+            },
              showMessage(color,message){
                 this.messageColor = color;
                 this.message = message;
@@ -564,6 +634,11 @@
                     self.showMessage('green', 'Please add atleast 1 item to add to invoice');   
                     return;
                  }
+
+                 this.invoice.isPending = this.isPending;
+                 if(this.isPending){ 
+                    this.invoice.paidAmount = this.paidAmount;
+                 }
                  loading();
                  Axios.put(`${apiURL}/api/v1/stock/`, {stock : this.productStock},{
                         headers: {
@@ -602,7 +677,6 @@
                             self.products.push({"text":obj.name,"_id":obj._id});
                         }
                     });
-                    console.log(data)
                     this.productStock = data;
                     this.backupStock = JSON.parse(JSON.stringify(data));
                 }
@@ -703,7 +777,7 @@
                 this.$refs.menu1.save(date)
             },
             handleCategorySelect(){
-                console.log("handle")
+
                 var self = this; 
                 var fields = [];
                 this.categories.forEach(function(obj){
@@ -711,7 +785,6 @@
                         fields = obj.fields;
                     }
                 });  
-                console.log(fields);
                 this.categoryItems = fields;
                 self.invoiceHeaders = [];
                 self.invoiceHeaders = self.invoiceHeaders.concat(self.invoiceHeaderPrefix);
@@ -763,11 +836,42 @@
                  });
              },
              activeGSTBox(){
+                 var self = this;
                  if(this.invoice.isGST){
-                    this.invoice.totalAmount = this.backupTotalAmount + ((this.backupTotalAmount * 12.5)/100);
+                    this.resetTaxList();
+                    this.invoice.totalAmount = this.backupTotalAmount + ((this.backupTotalAmount * self.taxPercentage)/100);
                  }else{
                     this.invoice.totalAmount = this.backupTotalAmount;
                  }
+             },
+             resetTaxList(){
+                var self = this;
+                self.taxPercentage = 0;
+                self.invoice.taxList = [];
+                self.invoiceTaxList = [];
+                    this.companyTaxList.forEach(function(obj){
+                        if(self.selectedTaxList.indexOf(obj.name + "(" + obj.value + "%)") > -1){
+                            var tempTax = ((self.backupTotalAmount * obj.value) / 100);
+                            self.taxPercentage += obj.value;
+                            self.invoice.taxList.push(obj.id)
+                            self.invoiceTaxList[self.selectedTaxList.indexOf(obj.name + "(" + obj.value + "%)")] = obj.name + " " + obj.value + "%   " + tempTax;
+                        }
+                    })
+             },
+             activeSelectTaxTag(){
+                 this.resetTaxList();
+             },
+             activeIsPaid(){
+                if(!this.isPending){
+                    this.paidAmount = 0;
+                }
+             },
+             validatePendingAmount(){
+                if(this.paidAmount >= this.invoice.totalAmount){
+                    this.isPending = false;
+                    this.paidAmount = 0;
+                    this.showMessage("green","Paid amount cannot exceed or be equal to the total amount")
+                }
              },
              handleInvoiceResponse(data){
                var self = this;
@@ -781,6 +885,10 @@
                             invObj.customerName = custObj.text;
                         }
                     })
+                    invObj.status = "Paid";
+                    if(invObj.isPending){
+                        invObj.status = "Pending";
+                    }
 
                     self.salesPersons.forEach(function(salesObj){
                         if(salesObj._id == invObj.name_of_sales_person){
@@ -788,7 +896,6 @@
                         }
                     })
                 })
-                console.log(this.invoiceList)
              },
              handleJSONFields(){
                 this.invoiceJSONFields = {
@@ -853,6 +960,7 @@
                     })
              },             
            viewInvoice(item){
+              var self = this;
               var customerTemp = {};
               this.customers.forEach(function(obj){
                   if(obj._id == item.customer_id){
@@ -864,9 +972,39 @@
               this.viewInvoiceHeaders= [];
               this.viewInvoiceHeaders.push( { text: 'SR NO', value: 'sno' }); 
               this.viewInvoiceHeaders = this.viewInvoiceHeaders.concat(this.invoiceHeaderPrefix);
-              for(var key in item.subCategories){                      
+              var totalAmount = 0;
+              for(var key in item.subCategories){  
+
                   this.viewInvoiceHeaders.push( { text: item.subCategories[key], value: item.subCategories[key] })
               } 
+              item.invoice_details.forEach(function(obj){
+                totalAmount += obj.amount;
+              })
+              self.invoiceDetails.taxListView = [];
+              if(item.is_gst){
+                this.invoiceDetails.showTax = true;
+              }else{
+                this.invoiceDetails.showTax = false;
+              }
+              this.invoiceDetails.netAmount = totalAmount;
+              if(this.invoiceDetails.showTax){
+                  
+                this.companyTaxList.forEach(function(obj){
+                    if(item.taxList.indexOf(obj.id) > -1){
+                        var tempTax = ((totalAmount * obj.value) / 100);
+                        self.invoiceDetails.taxListView.push(obj.name + " " + obj.value + "% " + tempTax);
+                    }
+                })
+              }
+              if(item.isPending){
+                self.invoiceDetails.isPending = true;
+                self.invoiceDetails.amountPaid = item.paidAmount;
+              }else{
+                self.invoiceDetails.isPending = false;
+                self.invoiceDetails.amountPaid = 0;
+              }
+
+              
               this.viewInvoiceHeaders.push( { text: 'Selling Price', value: 'sellingPrice' });
               this.viewInvoiceHeaders.push( { text: 'Amount', value: 'amount' })  
               this.viewInvoiceItems= item.invoice_details;
@@ -884,7 +1022,18 @@
             }, 
             print(){
                 window.print();
-            }      
+            },
+            handleCompanyTaxResponse(data){
+                var self = this;
+                 self.companyTaxList = [];
+                 self.companySelectList = [];
+                 if(data){
+                 data.forEach(function(obj){
+                    self.companyTaxList.push({"name" : obj.name,"value":obj.value,"id":obj._id});
+                    self.companySelectList.push(obj.name + "(" + obj.value + "%)" );
+                 });
+                }
+             }      
         },
         watch: {
             currentPrice : function(newData,oldData){
