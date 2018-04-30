@@ -13,6 +13,9 @@
                               <v-list-tile @click.native="handleNavigationMenu(2)">
                                     <v-list-tile-title>View Invoices</v-list-tile-title>
                               </v-list-tile>
+                              <v-list-tile @click.native="handleNavigationMenu(3)">
+                                <v-list-tile-title>Customer Invoices</v-list-tile-title>
+                          </v-list-tile>
                             </v-list>
                     </v-menu>
             </v-toolbar>
@@ -37,21 +40,21 @@
                     <td class="text-xs-left">{{ props.item.total_amount }}</td>
                     <td class="text-xs-left">{{ props.item.status }}</td>
                     <td class="">
-                        <v-btn icon class="mx-0" @click="deleteInvoice(props.item._id)">
+                        <!-- <v-btn icon class="mx-0" @click="deleteInvoice(props.item._id)">
                             <v-icon color="pink">delete</v-icon>
+                        </v-btn> -->
+                        <v-btn v-if="props.item.isPending" icon class="mx-0" @click="updatePendingInvoice(props.item._id)">
+                            <v-icon color="pink">update</v-icon>
                         </v-btn>
-                    </td>
-                    <td class="">
-                        <v-btn  @click="viewInvoice(props.item)">
-                            view
-                        </v-btn>
+                        <v-btn icon class="mx-0" @click="viewInvoice(props.item)">
+                                <v-icon color="pink">info</v-icon>
+                            </v-btn>
                     </td>
                     </template>
                     </v-data-table>
                     </v-card>    
                 </v-flex>
                 </v-layout>
-
 
                 <v-dialog v-model="viewDialog" fullscreen hide-overlay transition="dialog-bottom-transition" scrollable>
                 <v-card>
@@ -124,21 +127,92 @@
                         </template>
                     </v-data-table>
                     
-                    <v-flex xs2 offset-xs10>
-                            Net Amount : {{invoiceDetails.netAmount}}
+                    <v-flex class="margin-top-2percent" xs4 offset-xs9>
+                        <table>
+                                <tr><td>Net Amount :</td><td> {{invoiceDetails.netAmount}}</td></tr>
+                                <tr v-for="(item,i) in invoiceDetails.taxListView"><td>{{item.name}}</td><td>{{item.value}}</td></tr>
+                                <tr v-if="invoiceDetails.isPending"><td>Paid Amount :<td>{{invoiceDetails.amountPaid}}</td></tr>
+                                <tr v-if="invoiceDetails.isPending"><td>Pending Amount : </td><td> {{invoiceDetails.total_amount - invoiceDetails.amountPaid}}</td></tr>
+                                <tr><td> Grand Total :</td><td>{{invoiceDetails.total_amount}}</td></tr>
+                        </table>
+                            
                     </v-flex>
-                    <v-flex xs2 v-for="(item,i) in invoiceDetails.taxListView" offset-xs10> {{item}}</v-flex> 
-                    <v-flex xs2  offset-xs10 v-if="invoiceDetails.isPending">Paid Amount :  {{invoiceDetails.amountPaid}}</v-flex> 
-                    <v-flex xs2  offset-xs10 v-if="invoiceDetails.isPending">Pending Amount :  {{invoiceDetails.total_amount - invoiceDetails.amountPaid}}</v-flex> 
-                    <v-flex xs2 offset-xs10>
+                    <!-- <v-flex xs2 v-for="(item,i) in invoiceDetails.taxListView" offset-xs9> {{item}}</v-flex> 
+                    <v-flex xs2  offset-xs9 v-if="invoiceDetails.isPending">Paid Amount :  {{invoiceDetails.amountPaid}}</v-flex> 
+                    <v-flex xs2  offset-xs9 v-if="invoiceDetails.isPending">Pending Amount :  {{invoiceDetails.total_amount - invoiceDetails.amountPaid}}</v-flex> 
+                    <v-flex xs2 offset-xs9>
                       Grand Total : {{invoiceDetails.total_amount}}
-                    </v-flex>
+                    </v-flex> -->
                     </div>
                 </v-card>
 
                 </v-dialog>
 
             </v-container> 
+
+            <v-container v-if="isCustomerInvoiceView">
+                    <v-subheader class="text-xs-center headline mb-0">Customer Invoices </v-subheader>
+                    <v-spacer></v-spacer>
+                    <v-layout row justify-space-around > 
+                        <v-flex xs2 offset-xs0>
+                            <v-select
+                            label="Customers"
+                            :items="customers"
+                            @input="activeCustomerSearch()"
+                            v-model="searchCustomer"
+                            item-value="_id"
+                            single-line></v-select>      
+                        </v-flex>
+                        <v-flex xs2 offset-xs1>
+                        <v-select 
+                            label="Status"
+                            :items="invoiceStatus"
+                            @input="activeCustomerStatus()"
+                            v-model="searchInvoiceStatus"
+                            item-value="value"
+                            single-line></v-select> 
+                        </v-flex>  
+                        <v-flex xs2 offset-xs1 >  
+                                Pending Amount : {{searchCustomerPendingAmount}}
+                        </v-flex>    
+                        <v-flex xs2 offset-xs>
+                            <v-btn v-if="isCustomerSelected"  class="mx-0" @click="updatePendingInvoiceBulk()">
+                                Bulk Update
+                            </v-btn>     
+                         </v-flex>
+                        
+                    </v-layout>
+                <v-layout row wrap >
+                <v-flex d-flex xs12 sm12 md12> 
+                    <v-card>
+                    <v-data-table
+                    :headers="headers"
+                    :items="invoiceListCustomer"
+                    :pagination.sync="pagination"
+                    item-key="name"
+                    class="elevation-2">
+                    <template slot="items" slot-scope="props">
+                    <td>{{ props.item.invoice_number }}</td>
+                    <td class="text-xs-left">{{ props.item.salesPerson }}</td>
+                    <td class="text-xs-left">{{ props.item.customerName}}</td>
+                    <td class="text-xs-left">{{ props.item.date_of_sale }}</td>
+                    <td class="text-xs-left">{{ props.item.total_amount }}</td>
+                    <td class="text-xs-left">{{ props.item.status }}</td>
+                    <td class="">
+                        <!-- <v-btn icon class="mx-0" @click="deleteInvoice(props.item._id)">
+                            <v-icon color="pink">delete</v-icon>
+                        </v-btn> -->
+                        <v-btn v-if="props.item.isPending" icon class="mx-0" @click="updatePendingInvoice(props.item._id)">
+                            <v-icon color="pink">update</v-icon>
+                        </v-btn>
+                    </td>
+                    </template>
+                    </v-data-table>
+                    </v-card>    
+                </v-flex>
+                </v-layout>
+                </v-container>
+
             <v-container  fluid  v-if="isInvoiceCreate">
                     <v-subheader class="text-xs-center headline mb-0">Create Invoice </v-subheader>
                     <v-spacer></v-spacer>
@@ -233,9 +307,12 @@
                                     </v-flex>     
                                     
                                     <v-flex xs3>        
-                                    <v-btn  color="orange" dark small  fab @click="addNewInvoiceItemEntry()">
+                                    <!-- <v-btn  color="orange" dark small  fab @click="addNewInvoiceItemEntry()">
                                             <v-icon>add</v-icon>
-                                    </v-btn> 
+                                    </v-btn>  -->
+                                    <v-btn icon class="mx-1" @click="addNewInvoiceItemEntry()">
+                                            <v-icon color="pink">add</v-icon>
+                                    </v-btn>
                                     </v-flex>
                                     </v-layout>
                                     <v-layout>
@@ -404,6 +481,11 @@
             isInvoiceView : false,
             isInvoiceCreate : true,
             isPurchaseView : false,
+            invoiceStatus : [{text:"Pending",value:true},{text:"Paid",value:false}],
+            searchCustomerPendingAmount : 0,
+            searchInvoiceStatus : false,
+            searchStatusSelected : false,
+            isCustomerInvoiceView : false,
             categoryField : '',
             categoryFields : '',
             selectedTaxList : [],
@@ -437,6 +519,9 @@
             isPending : false,
             paidAmount : 0,
             invoiceList : [],
+            invoiceListCustomer : [],
+            searchCustomer : "",
+            isCustomerSelected : false,
             invoice :{
                 category_id : '',
                 supplierId: '',
@@ -464,7 +549,6 @@
                 {text : 'Total Amount',"value" : 'totalAmount'},
                 {text : 'Payment Status',"value" : 'status'},
                 {text : 'Action',"value" : 'action'},
-                {text : 'Edit',"value" : 'edit'}
                 ],
             purchaseHeaders: [
                 {
@@ -507,9 +591,9 @@
         mounted () {
             this.getAllCustomers();
             this.getAllProducts();
-            this.getAllInvoices();
             this.getAllcompanyTaxList();
             this.getAllSalesPersons();
+            this.getAllInvoices();
             this.addNewInvoiceItemEntry();
             this.getAllCategories();
             this.getAllCategoryDetails();
@@ -599,10 +683,11 @@
                 this.snackbar = true;
              },
              handleNavigationMenu(visibleFlag){
-                this.isInvoiceCreate = this.isInvoiceView = false
+                this.isInvoiceCreate = this.isInvoiceView = this.isCustomerInvoiceView = false
                 switch(visibleFlag){
                     case 1: this.isInvoiceCreate = true; break;
                     case 2 : this.isInvoiceView = true; break;
+                    case 3 : this.isCustomerInvoiceView = true; break;
                 }
              },
              addNewInvoiceItemEntry(){
@@ -873,11 +958,8 @@
                     this.showMessage("green","Paid amount cannot exceed or be equal to the total amount")
                 }
              },
-             handleInvoiceResponse(data){
-               var self = this;
-                this.invoiceCount = data.length;
-                this.invoiceList = data;
-                this.invoice.invoiceNumber = "INV-" + (parseInt(this.invoiceCount + 1));
+             refreshInvoiceList(data,self,isSearch){
+                var tempAmount = 0;
                 data.forEach(function(invObj){ 
                     invObj.date_of_sale = new Date(invObj.date_of_sale).toLocaleDateString()
                     self.customers.forEach(function(custObj){
@@ -888,6 +970,7 @@
                     invObj.status = "Paid";
                     if(invObj.isPending){
                         invObj.status = "Pending";
+                        tempAmount += (invObj.total_amount - invObj.paidAmount);
                     }
 
                     self.salesPersons.forEach(function(salesObj){
@@ -896,6 +979,17 @@
                         }
                     })
                 })
+                if(isSearch){
+                    this.searchCustomerPendingAmount = tempAmount;
+                 }
+             },
+             handleInvoiceResponse(data){
+               var self = this;
+                this.invoiceCount = data.length;
+                this.invoiceList = data;
+                this.invoiceListCustomer = data;
+                this.invoice.invoiceNumber = "INV-" + (parseInt(this.invoiceCount + 1));
+                this.refreshInvoiceList(data,self)
              },
              handleJSONFields(){
                 this.invoiceJSONFields = {
@@ -911,6 +1005,59 @@
              activeInvoiceItem(currItem){
                 this.currentProduct = currItem.productId;
                 this.updateProductBatchList();
+             },
+             activeCustomerStatus(){
+                 this.searchStatusSelected = true;
+                if(!this.searchInvoiceStatus){
+                    this.searchCustomerPendingAmount = 0;
+                }
+                if(this.isCustomerSelected){
+                    this.activeCustomerSearch();
+                }
+             },
+             activeCustomerSearch(){
+                var self = this;
+                var reqBody = {};
+                var extraUrl = "";
+                if(this.searchStatusSelected){
+                    extraUrl += "isPending=" + this.searchInvoiceStatus;
+                }
+                this.isCustomerSelected = true;
+                loading();
+                Axios.get(`${apiURL}/api/v1/invoice/customer/`+ self.searchCustomer + "?" + extraUrl,{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                })
+                .then(function(response){
+                        removeLoader();
+                        self.invoiceListCustomer = response.data;
+                        self.searchCustomerPendingAmount = 0;
+                        self.refreshInvoiceList(response.data,self,true)
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    })
+
+             },
+             updatePendingInvoiceBulk(){
+                var self = this;
+                var reqBody = {};
+                reqBody.isPending = false;
+                Axios.put(`${apiURL}/api/v1/invoice/customer/` + this.searchCustomer,{invoice:reqBody },{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                })
+                .then(function(response){
+                        self.showMessage('green', 'Invoice updated successfully');
+                        self.getAllInvoices();
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    })
+
+
              },
              updateProductBatchList(){
                 var self  = this;
@@ -958,8 +1105,26 @@
                         self.message = data.message
                         self.snackbar = true
                     })
-             },             
-           viewInvoice(item){
+             },
+             updatePendingInvoice(invoiceId){
+                var self = this;
+                var reqBody = {};
+                reqBody.isPending = false;
+                Axios.put(`${apiURL}/api/v1/invoice/` + invoiceId,{invoice:reqBody },{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                })
+                .then(function(response){
+                        self.showMessage('green', 'Invoice updated successfully');
+                        self.getAllInvoices();
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    })
+
+             },            
+             viewInvoice(item){
               var self = this;
               var customerTemp = {};
               this.customers.forEach(function(obj){
@@ -992,7 +1157,7 @@
                 this.companyTaxList.forEach(function(obj){
                     if(item.taxList.indexOf(obj.id) > -1){
                         var tempTax = ((totalAmount * obj.value) / 100);
-                        self.invoiceDetails.taxListView.push(obj.name + " " + obj.value + "% " + tempTax);
+                        self.invoiceDetails.taxListView.push({"name" : obj.name + " (" + obj.value + "%) :" ,"value" :  tempTax});
                     }
                 })
               }
@@ -1098,7 +1263,9 @@
      overflow-x: visible;
      overflow-y:  visible;
  }
-
+.margin-top-2percent {
+    margin-top:2%;
+}
 }
 </style>
 

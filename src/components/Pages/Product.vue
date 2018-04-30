@@ -48,8 +48,9 @@
                         <td class="text-xs-left">{{ props.item.description }}</td>
                         <td class="text-xs-left">{{ props.item.categoryName }}</td>
                         <td class="">
-                            <v-btn  color="orange" dark small  fab @click="deleteProduct(props.item._id)">
-                            <v-icon>remove</v-icon></v-btn>
+                            <v-btn icon class="mx-0" @click="deleteProduct(props.item._id)">
+                                    <v-icon color="pink">delete</v-icon>
+                                </v-btn>
                             </td>
                         </template>
                         </v-data-table>
@@ -119,8 +120,8 @@
                                     <template slot="items" slot-scope="props">
                                         <td>{{ props.item.text }}</td>
                                         <td class="">
-                                            <v-btn  color="orange" dark small  fab @click="deleteCategory(props.item._id)">
-                                                <v-icon>remove</v-icon>
+                                            <v-btn icon class="mx-0" @click="deleteCategory(props.item._id)">
+                                                    <v-icon color="pink">delete</v-icon>
                                             </v-btn>
                                         </td>
                                     </template>

@@ -177,9 +177,13 @@
                                           </v-menu>    
                                     </v-flex>
                                     <v-flex xs2>        
-                                    <v-btn  color="orange" dark small  fab @click="addNewPurchaseEntryItem()">
+                                    <!-- <v-btn  color="orange" dark small  fab @click="addNewPurchaseEntryItem()">
                                             <v-icon>add</v-icon>
-                                    </v-btn> 
+                                    </v-btn>  -->
+                                    <v-btn icon class="mx-0" @click="addNewPurchaseEntryItem()">
+                                            <v-icon color="pink">add</v-icon>
+                                        </v-btn>
+                                    </td>
                                     </v-flex>
                                     </v-layout>
                                     <v-layout>
@@ -236,8 +240,9 @@
                                                 </v-text-field>
                                             </td>
                                         <td class="">
-                                            <v-btn  color="orange" dark small  fab @click="deleteListItem(props.item.index)">
-                                            <v-icon>remove</v-icon></v-btn>
+                                            <v-btn icon class="mx-0" @click="deleteListItem(props.item.index)">
+                                                    <v-icon color="pink">delete</v-icon>
+                                                </v-btn>
                                             </td>
                                         </tr>
                                         </template>

@@ -8,62 +8,67 @@
             <v-icon>home</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <router-link to="/">
+            <router-link to="/" class="text-decoration-none">
               <v-list-tile-title>Home</v-list-tile-title>
             </router-link>
           </v-list-tile-content>
         </v-list-tile> 
         <v-list-tile @click="">
             <v-list-tile-action>
-              <v-icon>home</v-icon>
+              <v-icon>add</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <router-link to="/manageProduct">
+              <router-link to="/manageProduct" class="text-decoration-none">
                 <v-list-tile-title>Product</v-list-tile-title>
               </router-link>
             </v-list-tile-content>
           </v-list-tile> 
           <v-list-tile @click="">
               <v-list-tile-action>
-                <v-icon>home</v-icon>
+                <v-icon>list</v-icon>
               </v-list-tile-action>
               <v-list-tile-content>
-                <router-link to="/manageStock">
+                <router-link to="/manageStock" class="text-decoration-none">
                   <v-list-tile-title>Stock</v-list-tile-title>
                 </router-link>
               </v-list-tile-content>
             </v-list-tile> 
-            <v-list-tile @click="">
+            <v-list-tile >
                 <v-list-tile-action>
-                  <v-icon>home</v-icon>
+                  <v-icon>edit</v-icon>
                 </v-list-tile-action>
                 <v-list-tile-content>
-                  <router-link to="/manageUsers">
-                    <v-list-tile-title>Users</v-list-tile-title>
-                  </router-link>
+                  <v-list-tile-title> 
+                    <router-link to="/manageUsers" class="text-decoration-none">
+                      <v-list-tile-title>Users</v-list-tile-title>
+                    </router-link>
+                  </v-list-tile-title>
                 </v-list-tile-content>
-              </v-list-tile> 
-              <v-list-tile @click="">
-                  <v-list-tile-action>
-                    <v-icon>home</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <router-link to="/manageInvoicing">
+              </v-list-tile>
+              <v-list-tile >
+                <v-list-tile-action>
+                  <v-icon>search</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title> 
+                    <router-link to="/manageInvoicing" class="text-decoration-none">
                       <v-list-tile-title>Invoice</v-list-tile-title>
                     </router-link>
-                  </v-list-tile-content>
-                </v-list-tile> 
-
-          <v-list-tile @click="">
-                  <v-list-tile-action>
-                    <v-icon>home</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <router-link to="/profile">
-                      <v-list-tile-title>Profile</v-list-tile-title>
-                    </router-link>
-                  </v-list-tile-content>
-                </v-list-tile>         
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+                <v-list-tile >
+                    <v-list-tile-action>
+                      <v-icon>contacts</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title> 
+                      <router-link to="/profile" class="text-decoration-none">
+                        <v-list-tile-title>Profile</v-list-tile-title>
+                      </router-link>
+                      </v-list-tile-title>
+                    </v-list-tile-content>
+                  </v-list-tile>  
       </v-list>
     </v-navigation-drawer> 
     <v-toolbar color="indigo" dark fixed app>
@@ -104,5 +109,10 @@ export default {
 
 <style lang="scss">
   @import "./../assets/styles";
+
+  .text-decoration-none{
+    text-decoration: none !important;
+    color : black
+  }
 </style>
 
