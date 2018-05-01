@@ -56,27 +56,30 @@
                     </router-link>
                   </v-list-tile-title>
                 </v-list-tile-content>
-              </v-list-tile>
-                <v-list-tile >
-                    <v-list-tile-action>
-                      <v-icon>contacts</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title> 
-                      <router-link to="/profile" class="text-decoration-none">
-                        <v-list-tile-title>Profile</v-list-tile-title>
-                      </router-link>
-                      </v-list-tile-title>
-                    </v-list-tile-content>
-                  </v-list-tile>  
+              </v-list-tile>          
       </v-list>
     </v-navigation-drawer> 
     <v-toolbar color="indigo" dark fixed app>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
         <v-toolbar-title>Application</v-toolbar-title>
-        <v-flex xs2 offset-md7 md2>
-          <v-btn  color="blue" @click.native="submitSignout()">Sign out</v-btn>
-        </v-flex>
+          <v-spacer></v-spacer>
+         <v-toolbar-items>
+          <v-menu bottom offset-y>
+            <v-btn icon large slot="activator">
+              <v-icon>settings</v-icon>
+            </v-btn>
+            <v-list>
+              <v-list-tile @click="goToLink(`/profile`)">
+                <v-list-tile-title>
+                  <v-icon>account_circle</v-icon> Profile</v-list-tile-title>
+              </v-list-tile>
+              <v-list-tile @click="submitSignout()">
+                <v-list-tile-title>
+                  <v-icon>input</v-icon> Log out</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-toolbar-items>    
       </v-toolbar>
   </header>
 </template>
@@ -88,6 +91,7 @@
 
 <script>
 import Authentication from '@/components/pages/Authentication'
+ import router from '@/router'
 export default {
   data () {
     return {
@@ -99,7 +103,10 @@ export default {
   methods: {
     submitSignout () {
       Authentication.signout(this, '/login')
-    }
+    },
+    goToLink(url){
+      router.push(url)
+    },
   },
   props: {
       source: String
