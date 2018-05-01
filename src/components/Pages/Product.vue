@@ -31,7 +31,7 @@
 
                     <v-toolbar-items  >
                             <v-btn-toggle  mandatory  v-model="toggleStart">
-                                <v-btn flat class="" onclick="" @click.native="handleNavigationMenu(1)">View Product</v-btn>
+                                <v-btn flat class="" @click.native="handleNavigationMenu(1)">View Product</v-btn>
                                 <v-btn flat  @click.native="handleNavigationMenu(2)" class="">Add Product</v-btn>
                                 <v-btn flat  @click.native="handleNavigationMenu(3)">Add Category</v-btn>
                                 <v-btn flat  @click.native="handleNavigationMenu(4)">View Category</v-btn>
@@ -160,7 +160,7 @@
                              <br>
                                 <v-select label="Field" chips tags solo prepend-icon="filter_list" append-icon="" clearable v-model="category.fields">
                                 <template slot="selection" slot-scope="data">
-                                    <v-chip close @input="remove(data.item)" :selected="data.selected">
+                                    <v-chip close @input="removeChips(data.item)" :selected="data.selected">
                                     <strong>{{ data.item }}</strong>&nbsp;                                 
                                     </v-chip>
                                 </template>
@@ -498,7 +498,11 @@
                     case 5 : this.isTaxAdd = true; break;
                     case 6 : this.isTaxView = true; break;
                 }
-             }
+             },
+            removeChips (item) {
+                this.category.fields.splice(this.category.fields.indexOf(item), 1)
+                this.category.fields = [...this.category.fields]
+            }
              
         },
         watch: {
