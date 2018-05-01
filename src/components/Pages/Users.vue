@@ -4,8 +4,8 @@
             <app-header></app-header>
 
             <v-container>
-            <v-toolbar  class="elevation-0 transparent" floating dense >
-                    <v-menu offset-y>
+            <v-toolbar  class="elevation-0 transparent margin-top-0"  height=30 floating dense flat >
+                    <!-- <v-menu offset-y>
                             <v-btn color="primary" dark slot="activator">Actions</v-btn>
                             <v-list>
                               <v-list-tile @click.native="handleNavigationMenu(1)">
@@ -21,12 +21,21 @@
                                     <v-list-tile-title>View Customer</v-list-tile-title>
                               </v-list-tile>
                             </v-list>
-                    </v-menu>
+                    </v-menu> -->
+
+                <v-toolbar-items  >
+                    <v-btn-toggle  mandatory  v-model="toggleStart">
+                        <v-btn flat class="" onclick="" @click.native="handleNavigationMenu(1)">View Suppliers</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(2)" class="">Add Supplier</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(3)">Add Customer</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(4)">View Customer</v-btn>
+                    </v-btn-toggle>
+                </v-toolbar-items>
             </v-toolbar>
             
               <!-- <h3>Welcome to Product Management</h3> -->
                 <v-container v-if="isSupplierView">
-                        <v-subheader class="text-xs-center">Your Suppliers </v-subheader>
+                        <!-- <v-subheader class="text-xs-center">Your Suppliers </v-subheader> -->
                         <v-spacer></v-spacer>
                     <v-layout row wrap >
                     <v-flex d-flex xs11 sm11 md11>     
@@ -160,7 +169,7 @@
                     </v-container>
 
                     <v-container  v-if="isCustomerView">
-                            <v-subheader class="text-xs-center">Your Customers</v-subheader>
+                            <!-- <v-subheader class="text-xs-center">Your Customers</v-subheader> -->
                             <v-spacer></v-spacer>
                         <v-layout row wrap v-if="">
                             <v-flex d-flex xs10 sm10 md10>  
@@ -312,6 +321,7 @@
           return {
             snackbar: false,
             validated : 0,
+            toggleStart: 0,
             isSupplierAdd : false,
             isSupplierView : true,
             isCustomerAdd: false,

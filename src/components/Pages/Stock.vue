@@ -3,8 +3,8 @@
          <v-layout>
             <app-header></app-header>
             <v-container>
-            <v-toolbar  class="elevation-0 transparent" floating dense >
-                    <v-menu offset-y>
+            <v-toolbar  class="elevation-0 transparent" height=30 floating dense flat >
+                    <!-- <v-menu offset-y>
                             <v-btn color="primary" dark slot="activator">Actions</v-btn>
                             <v-list>
                               <v-list-tile @click.native="handleNavigationMenu(1)">
@@ -17,7 +17,15 @@
                                     <v-list-tile-title>View Purchase Orders</v-list-tile-title>
                               </v-list-tile>
                             </v-list>
-                    </v-menu>
+                    </v-menu> -->
+
+                <v-toolbar-items  >
+                    <v-btn-toggle  mandatory  v-model="toggleStart">
+                        <v-btn flat class="" onclick="" @click.native="handleNavigationMenu(1)">View Stock</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(2)" class="">Add Stock</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(3)">View Purchase Orders</v-btn>
+                    </v-btn-toggle>
+                </v-toolbar-items>
             </v-toolbar>
             
             <v-container v-if="isStockView">
@@ -326,6 +334,7 @@
           return {
             menu1: false,
             menu2: false,
+            toggleStart : 0,
             snackbar: false,
             validated : 0,
             isStockAdd : false,

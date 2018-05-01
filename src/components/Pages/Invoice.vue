@@ -3,8 +3,8 @@
          <v-layout>
             <app-header></app-header>
             <v-container>
-            <v-toolbar  class="elevation-0 transparent" floating dense >
-                    <v-menu offset-y>
+            <v-toolbar  class="elevation-0 transparent"  color="blue" floating dense flat  height=30 >
+                    <!-- <v-menu offset-y>
                             <v-btn color="primary" dark slot="activator">Actions</v-btn>
                             <v-list>
                               <v-list-tile @click.native="handleNavigationMenu(1)">
@@ -17,11 +17,18 @@
                                 <v-list-tile-title>Customer Invoices</v-list-tile-title>
                           </v-list-tile>
                             </v-list>
-                    </v-menu>
+                    </v-menu> -->
+                <v-toolbar-items  >
+                    <v-btn-toggle  mandatory  v-model="toggleStart">
+                        <v-btn flat class="" onclick="" @click.native="handleNavigationMenu(1)">Create Invoice</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(2)" class="">View Invoices</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(3)">Customer Invoices</v-btn>
+                    </v-btn-toggle>
+                </v-toolbar-items>
             </v-toolbar>
             
             <v-container v-if="isInvoiceView">
-                    <v-subheader class="text-xs-center headline mb-0">View Invoices </v-subheader>
+                    <!-- <v-subheader class="text-xs-center headline mb-0">View Invoices </v-subheader> -->
                     <v-spacer></v-spacer>
                 <v-layout row wrap >
                 <v-flex d-flex xs12 sm12 md12> 
@@ -151,7 +158,7 @@
             </v-container> 
 
             <v-container v-if="isCustomerInvoiceView">
-                    <v-subheader class="text-xs-center headline mb-0">Customer Invoices </v-subheader>
+                    <!-- <v-subheader class="text-xs-center headline mb-0">Customer Invoices </v-subheader> -->
                     <v-spacer></v-spacer>
                     <v-layout row justify-space-around > 
                         <v-flex xs2 offset-xs0>
@@ -234,7 +241,7 @@
                 </v-container>
 
             <v-container  fluid  v-if="isInvoiceCreate">
-                    <v-subheader class="text-xs-center headline mb-0">Create Invoice </v-subheader>
+                    <!-- <v-subheader class="text-xs-center headline mb-0">Create Invoice </v-subheader> -->
                     <v-spacer></v-spacer>
                     <v-layout row wrap v-if="">
                         <v-flex d-flex xs8 sm12 md10 lg12>    
@@ -494,6 +501,7 @@
       export default {
         data () {
           return {
+            toggleStart : 0,
             menu1: false,
             menu2: false,
             snackbar: false,

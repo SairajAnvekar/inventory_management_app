@@ -4,8 +4,8 @@
             <app-header></app-header>
 
             <v-container>
-            <v-toolbar  class="elevation-0 transparent" floating dense >
-                    <v-menu offset-y>
+            <v-toolbar  class="elevation-0 transparent" floating dense flat height=30  >
+                    <!-- <v-menu offset-y>
                             <v-btn color="primary" dark slot="activator">Actions</v-btn>
                             <v-list>
                               <v-list-tile @click.native="handleNavigationMenu(1)">
@@ -27,13 +27,24 @@
                                     <v-list-tile-title>View Tax</v-list-tile-title>
                               </v-list-tile>
                             </v-list>
-                    </v-menu>
+                    </v-menu> -->
+
+                    <v-toolbar-items  >
+                            <v-btn-toggle  mandatory  v-model="toggleStart">
+                                <v-btn flat class="" onclick="" @click.native="handleNavigationMenu(1)">View Product</v-btn>
+                                <v-btn flat  @click.native="handleNavigationMenu(2)" class="">Add Product</v-btn>
+                                <v-btn flat  @click.native="handleNavigationMenu(3)">Add Category</v-btn>
+                                <v-btn flat  @click.native="handleNavigationMenu(4)">View Category</v-btn>
+                                <v-btn flat  @click.native="handleNavigationMenu(5)">Add Tax</v-btn>
+                                <v-btn flat  @click.native="handleNavigationMenu(6)">View Tax</v-btn>
+                            </v-btn-toggle>
+                        </v-toolbar-items>
             </v-toolbar>
             
               
                 <!-- <h3>Welcome to Product Management</h3> -->
                 <v-container v-if="isProductView">
-                        <v-subheader class="text-xs-center">Your Products </v-subheader>
+                        <!-- <v-subheader class="text-xs-center">Your Products </v-subheader> -->
                         <v-spacer></v-spacer>
                     <v-layout row wrap >
                     <v-flex d-flex xs10 sm10 md10>     
@@ -107,7 +118,7 @@
                     </v-container>
 
                     <v-container  v-if="isCategoryView">
-                            <v-subheader class="text-xs-center">Your Categories</v-subheader>
+                            <!-- <v-subheader class="text-xs-center">Your Categories</v-subheader> -->
                             <v-spacer></v-spacer>
                         <v-layout row wrap v-if="">
                             <v-flex d-flex xs10 sm10 md10>  
@@ -168,7 +179,7 @@
                     </v-container>
 
                     <v-container  v-if="isTaxView">
-                            <v-subheader class="text-xs-center">Your Company Tax</v-subheader>
+                            <!-- <v-subheader class="text-xs-center">Your Company Tax</v-subheader> -->
                             <v-spacer></v-spacer>
                         <v-layout row wrap v-if="">
                             <v-flex d-flex xs10 sm10 md10>  
@@ -240,6 +251,7 @@
         data () {
           return {
             snackbar: false,
+            toggleStart : 0,
             validated : 0,
             isProductAdd : false,
             isProductView : true,
