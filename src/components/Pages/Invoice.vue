@@ -842,6 +842,9 @@
              activeProduct(obj){
                 this.currentStockItem = obj;
                 this.currentProduct = obj.productId;
+                if(obj.quantity != 0 && obj.batchNumber != ""){
+                    this.validateQuantity(obj)
+                }
              },
              activeBatch(obj){
                 this.currentStockItem = obj;
@@ -854,6 +857,9 @@
                 });
                 obj.sellingPrice = tempObj.selling_price;
                 obj.quantityLimit = tempObj.quantity;
+                if(obj.quantity != 0 && obj.productId != ""){
+                    this.validateQuantity(obj)
+                }
              },
              validateQuantity(obj){
                  if(obj.quantityLimit == 0 || obj.quantity > obj.quantityLimit){
@@ -976,6 +982,9 @@
              },
              activeSelectTaxTag(){
                  this.resetTaxList();
+                 if(this.invoice.isGST){
+                     this.activeGSTBox();
+                 }
              },
              activeIsPaid(){
                 if(!this.isPending){
