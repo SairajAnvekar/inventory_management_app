@@ -43,7 +43,7 @@
                         <!-- <v-btn icon class="mx-0" @click="deleteInvoice(props.item._id)">
                             <v-icon color="pink">delete</v-icon>
                         </v-btn> -->
-                        <v-btn v-if="props.item.isPending" icon class="mx-0" @click="updatePendingInvoice(props.item._id)">
+                        <v-btn v-if="props.item.isPending" icon class="mx-0" @click="updatePendingInvoice(props.item)">
                             <v-icon color="pink">update</v-icon>
                         </v-btn>
                         <v-btn icon class="mx-0" @click="viewInvoice(props.item)">
@@ -171,10 +171,26 @@
                             v-model="searchInvoiceStatus"
                             item-value="value"
                             single-line></v-select> 
+
+                          
+
                         </v-flex>  
-                        <v-flex xs2 offset-xs1 >  
-                                Pending Amount : {{searchCustomerPendingAmount}}
-                        </v-flex>    
+
+                        <v-layout row v-if="isCustomerSelected">
+                        <v-flex xs4 offset-xs1  >
+                                <v-text-field
+                                label="Amount Paid"
+                                @input="validateAmountPaidUpdate()"
+                                v-model="customerAmountPaid"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex p>
+                                <v-btn  class="mx-0" icon  @click="updateCustomeAmontPaid()">
+                                        <v-icon color="green">update</v-icon>
+                                    </v-btn>
+                            </v-flex>
+                        </v-layout>
+                      
                         <v-flex xs2 offset-xs>
                             <v-btn v-if="isCustomerSelected"  class="mx-0" @click="updatePendingInvoiceBulk()">
                                 Bulk Update
@@ -183,6 +199,10 @@
                         
                     </v-layout>
                 <v-layout row wrap >
+                        <v-flex xs2 offset-xs v-if="isCustomerSelected">
+                                Pending Amount : {{searchCustomerPendingAmount}}
+                              
+                        </v-flex>   
                 <v-flex d-flex xs12 sm12 md12> 
                     <v-card>
                     <v-data-table
@@ -202,7 +222,7 @@
                         <!-- <v-btn icon class="mx-0" @click="deleteInvoice(props.item._id)">
                             <v-icon color="pink">delete</v-icon>
                         </v-btn> -->
-                        <v-btn v-if="props.item.isPending" icon class="mx-0" @click="updatePendingInvoice(props.item._id)">
+                        <v-btn v-if="props.item.isPending" icon class="mx-0" @click="updatePendingInvoice(props.item)">
                             <v-icon color="pink">update</v-icon>
                         </v-btn>
                     </td>
@@ -481,9 +501,10 @@
             isInvoiceView : false,
             isInvoiceCreate : true,
             isPurchaseView : false,
-            invoiceStatus : [{text:"Pending",value:true},{text:"Paid",value:false}],
+            invoiceStatus : [{text:"All",value:"N/A"},{text:"Pending",value:true},{text:"Paid",value:false}],
             searchCustomerPendingAmount : 0,
             searchInvoiceStatus : false,
+            customerAmountPaid : 0,
             searchStatusSelected : false,
             isCustomerInvoiceView : false,
             categoryField : '',
@@ -771,9 +792,11 @@
                  self.customers = [];
                  if(data){
                  data.forEach(function(obj){
-                    self.customers.push({"text":obj.name,"_id":obj._id,"address":obj.address,"gstin":obj.gstin});
+                    self.customers.push({"text":obj.name,"_id":obj._id,"address":obj.address,"gstin":obj.gstin,"pendingAmount":obj.pending_amount});
                  });
                 }
+
+                self.setCustomerPendingAmount();
 
              },
              handleUsersResponse(data){
@@ -980,7 +1003,7 @@
                     })
                 })
                 if(isSearch){
-                    this.searchCustomerPendingAmount = tempAmount;
+                    // this.searchCustomerPendingAmount = tempAmount;
                  }
              },
              handleInvoiceResponse(data){
@@ -1007,8 +1030,7 @@
                 this.updateProductBatchList();
              },
              activeCustomerStatus(){
-                 this.searchStatusSelected = true;
-                if(!this.searchInvoiceStatus){
+                if(this.searchInvoiceStatus == false){
                     this.searchCustomerPendingAmount = 0;
                 }
                 if(this.isCustomerSelected){
@@ -1019,7 +1041,7 @@
                 var self = this;
                 var reqBody = {};
                 var extraUrl = "";
-                if(this.searchStatusSelected){
+                if(this.searchInvoiceStatus != "N/A"){
                     extraUrl += "isPending=" + this.searchInvoiceStatus;
                 }
                 this.isCustomerSelected = true;
@@ -1033,12 +1055,23 @@
                         removeLoader();
                         self.invoiceListCustomer = response.data;
                         self.searchCustomerPendingAmount = 0;
+                        self.getAllCustomers();
                         self.refreshInvoiceList(response.data,self,true)
                     }).catch(({response: {data}}) => {
                         self.message = data.message
                         self.snackbar = true
                     })
-
+             },
+             setCustomerPendingAmount(){
+                var self = this;
+                this.searchCustomerPendingAmount = 0;
+                if(this.isCustomerInvoiceView){
+                    self.customers.forEach(function(custObj){
+                        if(custObj._id == self.searchCustomer){
+                            self.searchCustomerPendingAmount =  custObj.pendingAmount;
+                        }
+                    });
+                }
              },
              updatePendingInvoiceBulk(){
                 var self = this;
@@ -1052,12 +1085,45 @@
                 .then(function(response){
                         self.showMessage('green', 'Invoice updated successfully');
                         self.getAllInvoices();
+                        self.activeCustomerSearch();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
                         self.snackbar = true
                     })
 
 
+             },
+             validateAmountPaidUpdate(){
+                if(this.customerAmountPaid<0){
+                    this.showMessage("green","Payment amount cannot be less than 0");
+                    this.customerAmountPaid = 0;
+                    return false;;
+                }
+                if(this.customerAmountPaid>this.searchCustomerPendingAmount){
+                    this.showMessage("green","Payment amount cannot be more than pending amount");
+                    this.customerAmountPaid = 0;
+                    return false;
+                }
+                return true;
+             },
+             updateCustomeAmontPaid(){
+                var self = this;
+                var reqBody = {};
+                reqBody.amountPaid = this.customerAmountPaid;
+                Axios.put(`${apiURL}/api/v1/customer/updateAmount/` + this.searchCustomer,{customer:reqBody },{
+                    headers: {
+                    'Authorization': Authentication.getAuthenticationHeader(this)
+                    }
+                })
+                .then(function(response){
+                        self.showMessage('green', 'Amount updated successfully for this customer');
+                        self.getAllInvoices();
+                        self.activeCustomerSearch();
+                        self.customerAmountPaid = 0;
+                    }).catch(({response: {data}}) => {
+                        self.message = data.message
+                        self.snackbar = true
+                    });
              },
              updateProductBatchList(){
                 var self  = this;
@@ -1106,11 +1172,15 @@
                         self.snackbar = true
                     })
              },
-             updatePendingInvoice(invoiceId){
+             updatePendingInvoice(item){
                 var self = this;
                 var reqBody = {};
                 reqBody.isPending = false;
-                Axios.put(`${apiURL}/api/v1/invoice/` + invoiceId,{invoice:reqBody },{
+                reqBody.totalAmount = item.total_amount;
+                reqBody.paidAmount = item.paidAmount;
+                reqBody.customerId = item.customer_id;
+                
+                Axios.put(`${apiURL}/api/v1/invoice/updatePaymentStatus/` + item._id,{invoice:reqBody },{
                     headers: {
                     'Authorization': Authentication.getAuthenticationHeader(this)
                     }
@@ -1118,6 +1188,9 @@
                 .then(function(response){
                         self.showMessage('green', 'Invoice updated successfully');
                         self.getAllInvoices();
+                        if(self.isCustomerInvoiceView){
+                            self.activeCustomerSearch();
+                        }
                     }).catch(({response: {data}}) => {
                         self.message = data.message
                         self.snackbar = true
