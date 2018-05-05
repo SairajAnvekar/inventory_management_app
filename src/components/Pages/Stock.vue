@@ -108,7 +108,7 @@
                         <v-btn icon class="mx-0" @click="updateStock(props.item)">
                             <v-icon color="teal">edit</v-icon>
                         </v-btn>
-                        <v-btn icon class="mx-0" @click="deleteStock(props.item._id)">
+                        <v-btn icon class="mx-0"  v-if="role == 'admin'" @click="deleteStock(props.item._id)">
                             <v-icon color="pink">delete</v-icon>
                         </v-btn>
                     </td>
@@ -334,6 +334,7 @@
           return {
             menu1: false,
             menu2: false,
+            role: this.$cookie.get('role'),
             toggleStart : 0,
             snackbar: false,
             validated : 0,

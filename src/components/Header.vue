@@ -81,7 +81,7 @@
               <v-icon>settings</v-icon>
             </v-btn>
             <v-list>
-              <v-list-tile @click="goToLink(`/profile`)">
+              <v-list-tile  v-if="role == 'admin'" @click="goToLink(`/profile`)">
                 <v-list-tile-title>
                   <v-icon>account_circle</v-icon> Profile</v-list-tile-title>
               </v-list-tile>
@@ -103,7 +103,8 @@ export default {
     return {
       search: '',
       status: '',     
-      drawer: null
+      drawer: null,
+      role: this.$cookie.get('role')
     }
   },
   methods: {

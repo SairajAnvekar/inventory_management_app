@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-content  v-if="role == 'admin'">
     <v-layout>
       <app-header></app-header>
       <v-container>
@@ -68,6 +68,7 @@
       return {
         validated: 1,
         loginPage: false,
+        role: this.$cookie.get('role'),
         profile: {},
         branch: {}
       }

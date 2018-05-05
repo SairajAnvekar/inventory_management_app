@@ -22,7 +22,7 @@
                     <v-btn-toggle  mandatory  v-model="toggleStart">
                         <v-btn flat class="" onclick="" @click.native="handleNavigationMenu(1)">Create Invoice</v-btn>
                         <v-btn flat  @click.native="handleNavigationMenu(2)" class="">View Invoices</v-btn>
-                        <v-btn flat  @click.native="handleNavigationMenu(3)">Customer Invoices</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(3)"  v-if="role == 'admin'">Customer Invoices</v-btn>
                     </v-btn-toggle>
                 </v-toolbar-items>
             </v-toolbar>
@@ -502,6 +502,7 @@
         data () {
           return {
             toggleStart : 0,
+            role: this.$cookie.get('role'),
             menu1: false,
             menu2: false,
             snackbar: false,
@@ -842,6 +843,9 @@
              activeProduct(obj){
                 this.currentStockItem = obj;
                 this.currentProduct = obj.productId;
+                if(obj.quantity != 0 && obj.batchNumber != ""){
+                    this.validateQuantity(obj)
+                }
              },
              activeBatch(obj){
                 this.currentStockItem = obj;
@@ -854,6 +858,9 @@
                 });
                 obj.sellingPrice = tempObj.selling_price;
                 obj.quantityLimit = tempObj.quantity;
+                if(obj.quantity != 0 && obj.productId != ""){
+                    this.validateQuantity(obj)
+                }
              },
              validateQuantity(obj){
                  if(obj.quantityLimit == 0 || obj.quantity > obj.quantityLimit){
@@ -976,6 +983,9 @@
              },
              activeSelectTaxTag(){
                  this.resetTaxList();
+                 if(this.invoice.isGST){
+                     this.activeGSTBox();
+                 }
              },
              activeIsPaid(){
                 if(!this.isPending){
