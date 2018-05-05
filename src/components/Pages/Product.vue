@@ -35,8 +35,8 @@
                                 <v-btn flat  @click.native="handleNavigationMenu(2)" class="">Add Product</v-btn>
                                 <v-btn flat  @click.native="handleNavigationMenu(3)">Add Category</v-btn>
                                 <v-btn flat  @click.native="handleNavigationMenu(4)">View Category</v-btn>
-                                <v-btn flat  @click.native="handleNavigationMenu(5)">Add Tax</v-btn>
-                                <v-btn flat  @click.native="handleNavigationMenu(6)">View Tax</v-btn>
+                                <v-btn flat  @click.native="handleNavigationMenu(5)"  v-if="role == 'admin'">Add Tax</v-btn>
+                                <v-btn flat  @click.native="handleNavigationMenu(6)"  v-if="role == 'admin'">View Tax</v-btn>
                             </v-btn-toggle>
                         </v-toolbar-items>
             </v-toolbar>
@@ -59,7 +59,7 @@
                         <td class="text-xs-left">{{ props.item.description }}</td>
                         <td class="text-xs-left">{{ props.item.categoryName }}</td>
                         <td class="">
-                            <v-btn icon class="mx-0" @click="deleteProduct(props.item._id)">
+                            <v-btn icon class="mx-0"  v-if="role == 'admin'" @click="deleteProduct(props.item._id)">
                                     <v-icon color="pink">delete</v-icon>
                                 </v-btn>
                             </td>
@@ -131,7 +131,7 @@
                                     <template slot="items" slot-scope="props">
                                         <td>{{ props.item.text }}</td>
                                         <td class="">
-                                            <v-btn icon class="mx-0" @click="deleteCategory(props.item._id)">
+                                            <v-btn icon class="mx-0"  v-if="role == 'admin'" @click="deleteCategory(props.item._id)">
                                                     <v-icon color="pink">delete</v-icon>
                                             </v-btn>
                                         </td>
@@ -178,7 +178,7 @@
                         </v-layout>
                     </v-container>
 
-                    <v-container  v-if="isTaxView">
+                    <v-container  v-if="isTaxView" >
                             <!-- <v-subheader class="text-xs-center">Your Company Tax</v-subheader> -->
                             <v-spacer></v-spacer>
                         <v-layout row wrap v-if="">
@@ -251,6 +251,7 @@
         data () {
           return {
             snackbar: false,
+            role: this.$cookie.get('role'),
             toggleStart : 0,
             validated : 0,
             isProductAdd : false,
@@ -441,7 +442,6 @@
                 this.categoryItems = fields;
              },
              deleteProduct(productId){
-                 console.log(productId)
                  var self = this;
                  Axios.delete(`${apiURL}/api/v1/product/` + productId,{
                     headers: {
@@ -457,7 +457,6 @@
                     })
              },
              deleteCategory(categoryId){
-                 console.log(categoryId)
                  var self = this;
                  Axios.delete(`${apiURL}/api/v1/category/` + categoryId,{
                     headers: {
@@ -473,7 +472,6 @@
                     })
              },
              deleteTax(taxId){
-                 console.log(taxId)
                  var self = this;
                  Axios.delete(`${apiURL}/api/v1/companyTax/` + taxId,{
                     headers: {

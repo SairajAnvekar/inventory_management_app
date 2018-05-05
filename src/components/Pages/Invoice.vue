@@ -22,7 +22,7 @@
                     <v-btn-toggle  mandatory  v-model="toggleStart">
                         <v-btn flat class="" onclick="" @click.native="handleNavigationMenu(1)">Create Invoice</v-btn>
                         <v-btn flat  @click.native="handleNavigationMenu(2)" class="">View Invoices</v-btn>
-                        <v-btn flat  @click.native="handleNavigationMenu(3)">Customer Invoices</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(3)"  v-if="role == 'admin'">Customer Invoices</v-btn>
                     </v-btn-toggle>
                 </v-toolbar-items>
             </v-toolbar>
@@ -502,6 +502,7 @@
         data () {
           return {
             toggleStart : 0,
+            role: this.$cookie.get('role'),
             menu1: false,
             menu2: false,
             snackbar: false,

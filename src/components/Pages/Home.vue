@@ -6,6 +6,8 @@
            <v-list >
              <v-layout row wrap header >
               <h1>Welcome To Vision Gallery</h1>               
+             <v-flex v-if="role == 'admin'">
+             </v-flex>
             </v-layout>              
           </v-list>                 
         </v-container>
@@ -24,10 +26,10 @@ export default {
     return {
       validated : 1,
       loginPage : false,      
+      role: this.$cookie.get('role')
     }
   }, 
   mounted () {
-   
   },
   methods: {
    

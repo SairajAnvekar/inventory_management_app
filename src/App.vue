@@ -21,9 +21,9 @@ export default {
 </style>
 <style lang="scss">
   @import "./assets/styles";
-    body {
-   /* background: url('./assets/images/background.jpg') no-repeat center center fixed;*/
-   /* &:after {
+    /* body {
+    background: url('./assets/images/background.jpg') no-repeat center center fixed;
+    &:after {
       content: '';
       position: fixed;
       width: 100%;
@@ -32,6 +32,6 @@ export default {
       left: 0;
       opacity: .3;
       z-index: -1;
-    }*/
-  }
+    }
+  } */
 </style>

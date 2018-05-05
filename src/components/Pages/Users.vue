@@ -105,7 +105,7 @@
                             <v-btn icon class="mx-0" @click="updateSupplier(props.item)">
                                 <v-icon color="teal">edit</v-icon>
                             </v-btn>
-                            <v-btn icon class="mx-0" @click="deleteSupplier(props.item._id)">
+                            <v-btn icon class="mx-0"  v-if="role == 'admin'" @click="deleteSupplier(props.item._id)">
                                 <v-icon color="pink">delete</v-icon>
                             </v-btn>    
                         </td>
@@ -240,7 +240,7 @@
                                             <v-btn icon class="mx-0" @click="updateCustomer(props.item)">
                                                 <v-icon color="teal">edit</v-icon>
                                             </v-btn>
-                                            <v-btn icon class="mx-0" @click="deleteCustomer(props.item._id)">
+                                            <v-btn icon class="mx-0"  v-if="role == 'admin'" @click="deleteCustomer(props.item._id)">
                                                     <v-icon color="pink">delete</v-icon>
                                             </v-btn>
                                         </td>
@@ -320,6 +320,7 @@
         data () {
           return {
             snackbar: false,
+            role: this.$cookie.get('role'),
             validated : 0,
             toggleStart: 0,
             isSupplierAdd : false,
