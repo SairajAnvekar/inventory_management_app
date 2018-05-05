@@ -1,4 +1,3 @@
-
 <template>
   <header class="l-header-container">
       <v-navigation-drawer fixed v-model="drawer" app>
@@ -56,7 +55,20 @@
                     </router-link>
                   </v-list-tile-title>
                 </v-list-tile-content>
-              </v-list-tile>          
+              </v-list-tile>      
+
+                  <v-list-tile >
+                <v-list-tile-action>
+                  <v-icon>search</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title> 
+                    <router-link to="/reports" class="text-decoration-none">
+                      <v-list-tile-title>Reports</v-list-tile-title>
+                    </router-link>
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>      
       </v-list>
     </v-navigation-drawer> 
     <v-toolbar color="indigo" dark fixed app>
@@ -83,12 +95,6 @@
       </v-toolbar>
   </header>
 </template>
-<!--v-layout row wrap>
-    <v-flex xs12 offset-md1 md1>
-      <v-btn block color="red lighten-1 white--text" @click.native="submitSignout()">Sign out</v-btn>
-    </v-flex>
-  </v-layout -->
-
 <script>
 import Authentication from '@/components/pages/Authentication'
  import router from '@/router'
