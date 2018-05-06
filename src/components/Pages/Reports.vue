@@ -9,6 +9,7 @@
                         <v-btn flat class="" onclick="" @click.native="handleNavigationMenu(1)">Customer Reports</v-btn>
                         <v-btn flat  @click.native="handleNavigationMenu(2)" class="">Purchase Reports</v-btn>
                         <v-btn flat  @click.native="handleNavigationMenu(3)">Sales Reports</v-btn>
+                        <v-btn flat  @click.native="handleNavigationMenu(4)">All Reports</v-btn>
                     </v-btn-toggle>
                 </v-toolbar-items>
             </v-toolbar>
@@ -77,6 +78,30 @@
               </v-flex>           
             </v-layout> 
 
+            <v-layout row wrap header v-if="isAllView" >
+                <v-spacer></v-spacer>
+                <v-btn color="info" class="" onclick="" @click.native="exportAll">Export</v-btn>
+                <v-flex xs12 >       
+                  <v-data-table
+                  :headers="headersAll"
+                  :items="allTransactionData"           
+                  item-key="text"
+                  class="elevation-1 all_table">
+                  <template slot="items" slot-scope="props" >
+                      <td>{{ props.item.date }}</td>
+                      <td>{{ props.item.type }}</td>
+                      <td>{{ props.item.dcNumber }}</td>
+                      <td>{{ props.item.name }}</td>       
+                      <td>{{ props.item.netAmount }}</td>     
+                      <td>{{ props.item.taxAmount }}</td>       
+                      <td>{{ props.item.total_amount }}</td>       
+                      <td>{{ props.item.debit }}</td>       
+                      <td>{{ props.item.credit }}</td>       
+                  </template>
+                  </v-data-table>  
+                </v-flex>           
+              </v-layout> 
+
         </v-container>
   <app-footer></app-footer>
 </v-layout>
@@ -100,6 +125,10 @@ export default {
       toggleStart : 0,
       customerData:[],
       purchaseData : [],
+      isAllView : false,
+      allTransactionData : [],
+      allTotalDebit : 0,
+      allTotalCredit : 0,
       salesData : [],
       companyTaxList : [],
       headersCustomer :[
@@ -127,6 +156,18 @@ export default {
                 {text : 'Total Amount ',value : 'totalAmount'}
 
           ],
+          headersAll : [
+                { text: 'Date',align: 'left',value: 'date'},
+                {text : 'Type',value : 'type'},
+                {text : 'Dc No',value : 'dcNumber'},
+                { text: 'Particulars',align: 'left',value: 'particular'},
+                {text : 'Net Amount',value : 'netAmount'},
+                {text : 'Tax Amount',value : 'taxAmount'},
+                {text : 'Total Amount ',value : 'totalAmount'},
+                {text : 'Debit',value : 'debit'},
+                {text : 'Credit',value : 'credit'}
+
+          ],
 
     }
   }, 
@@ -135,6 +176,7 @@ export default {
     this.getAllPurchaseOrders();
     this.getAllInvoices();
     this.getAllcompanyTaxList();
+    this.getAllTransactions();
   
   },
   methods: {
@@ -153,6 +195,12 @@ export default {
     exportSales(){
       const table  = document.querySelector('.sales_table table tbody').innerHTML;      
       var exportToExcel = new ExportToExcel(table,this.headersSales);
+      exportToExcel.generate(),
+      exportToExcel.download();
+    },
+    exportAll(){
+      const table  = document.querySelector('.all_table table tbody').innerHTML;      
+      var exportToExcel = new ExportToExcel(table,this.headersAll);
       exportToExcel.generate(),
       exportToExcel.download();
     },
@@ -177,14 +225,92 @@ export default {
         }
         }).then(({data}) => (this.handleInvoiceResponse(data)))
     },
+    getAllTransactions(){
+      var self = this;
+      Axios.get(`${apiURL}/api/v1/purchaseOrder/Supplier`, {
+      headers: {
+        'Authorization': Authentication.getAuthenticationHeader(this)
+      }
+      }).then(function(purData){
+          Axios.get(`${apiURL}/api/v1/invoice/all`, {
+          headers: {
+              'Authorization': Authentication.getAuthenticationHeader(self)
+          }
+          }).then(function(invoiceData){
+            self.handleAllTransaction(purData.data,invoiceData.data);
+          })
+      })
+
+    },
+    handleAllTransaction(purData,invoiceData){
+        var self = this;
+        var totalCredit = 0;
+        self.allTransactionData = [];
+        invoiceData.forEach(function(sObj){
+          var myObj = {};
+          myObj.date = new Date(sObj.date_of_sale).toLocaleDateString()
+          var taxPercent = 0;
+          myObj.name = sObj.customerName
+          myObj.dcNumber = sObj.invoice_number
+          myObj.type = "Sale";
+          myObj.total_amount = sObj.total_amount;
+          if(sObj.is_gst){
+            self.companyTaxList.forEach(function(taxObj){
+              if(sObj.taxList.indexOf(taxObj._id) > -1){
+                taxPercent += taxObj.value;
+              }
+            })
+            myObj.taxAmount = ((sObj.total_amount * taxPercent)/100);
+            myObj.netAmount = sObj.total_amount - myObj.taxAmount;
+          }else{
+            myObj.taxAmount = 0;
+            myObj.netAmount = sObj.total_amount;
+          }
+          self.allTransactionData.push(myObj);
+        })
+
+          purData.forEach(function(pObj){
+            var myObj = {};
+            myObj.date = new Date(pObj.date_of_order).toLocaleDateString()
+            var taxPercent = 0;
+            if(!pObj.supplierName){
+              myObj.name = "N/A"
+            }
+            myObj.name = pObj.supplierName
+            myObj.dcNumber = pObj.purchase_order_number
+            myObj.type = "Receipt";
+            myObj.taxAmount = 0;
+            myObj.netAmount = pObj.total_amount;
+            myObj.total_amount = 0;
+            self.allTransactionData.push(myObj);
+          });
+        self.allTransactionData.sort(function(a, b){
+            var x = Date.parse(new Date(a.date));
+            var y = Date.parse(new Date(b.date));
+            if (x < y) {return -1;}
+            if (x > y) {return 1;}
+            return 0;
+        })
+        var totalAmount = 0;
+        self.allTransactionData.forEach(function(mOBj){
+          totalAmount += mOBj.total_amount;
+          mOBj.debit = totalAmount;
+          if(mOBj.type == "Receipt"){
+            totalCredit += mOBj.netAmount;
+            mOBj.credit = totalCredit;
+          }
+        })
+        self.allTotalDebit = totalAmount;
+        self.allTotalCredit = totalCredit;
+    },
     getAllcompanyTaxList (context) {
-                Axios.get(`${apiURL}/api/v1/companyTax/`, {
-                headers: {
-                    'Authorization': Authentication.getAuthenticationHeader(this)
-                }
-                }).then(({data}) => (
-                  this.companyTaxList = data
-                ))
+        Axios.get(`${apiURL}/api/v1/companyTax/`, {
+        headers: {
+            'Authorization': Authentication.getAuthenticationHeader(this)
+        }
+        }).then(({data}) => (
+          this.companyTaxList = data
+        ))
     },
     handleInvoiceResponse(data){
         var self = this;
@@ -205,7 +331,6 @@ export default {
           }
         })
         this.salesData = data;
-        console.log(data)
       },
     handlePurchaseOrderGet(data){
       var totalAmountPurchase = 0;
@@ -222,11 +347,12 @@ export default {
         this.purchaseData = data;
     },
     handleNavigationMenu(visibleFlag){
-        this.isCustomerView = this.isPurchaseView = this.isSalesView = false
+        this.isCustomerView = this.isPurchaseView = this.isSalesView = this.isAllView = false
         switch(visibleFlag){
             case 1: this.isCustomerView = true; break;
             case 2 : this.isPurchaseView = true; break;
             case 3 : this.isSalesView = true; break;
+            case 4 : this.isAllView = true; break;
         }
     }
   }
