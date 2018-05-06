@@ -42,7 +42,8 @@ ExportToExcel.prototype.download = function(){
     //for Chrome and Firefox 
     else {
         link.setAttribute('href', data_type + ', ' + encodeURIComponent(this.excelFormatData));
-        link.setAttribute('download', 'Report.xls');
+        var timeStamp = Math.floor(Date.now()/1000);
+        link.setAttribute('download', 'Report_' + timeStamp + '.xls');
         link.click();
         link.remove;
     }  

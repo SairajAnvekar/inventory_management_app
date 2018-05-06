@@ -338,6 +338,7 @@
             toggleStart : 0,
             snackbar: false,
             validated : 0,
+            purchaseNumber : 0,
             isStockAdd : false,
             isStockView : true,
             isPurchaseView : false,
@@ -496,7 +497,7 @@
                     self.showMessage('green', 'Please add atleast 1 item to add to stock');   
                     return;
                  }
-                 console.log(this.stock)
+                 this.stock.purchaseNumber = this.purchaseNumber;
                  loading();
                  Axios.post(`${apiURL}/api/v1/purchaseOrder/`, {stock : this.stock},{
                         headers: {
@@ -603,6 +604,7 @@
                     obj.date_of_order = new Date(obj.date_of_order).toLocaleDateString()
                     obj.date_recieved = new Date(obj.date_recieved).toLocaleDateString()
                  });
+                 this.purchaseNumber = parseInt(data.length + 1);
                  this.purchaseList = data;
              },
              activeRowItem (obj){
