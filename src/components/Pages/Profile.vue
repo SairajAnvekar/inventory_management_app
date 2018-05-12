@@ -24,8 +24,8 @@
                   <v-text-field label="GSTIN" prepend-icon="account_box" v-model="profile.gstin" required>
                   </v-text-field>
 
-                  <v-text-field label="TIN" prepend-icon="account_box" v-model="profile.tin" required>
-                  </v-text-field>
+                  <!-- <v-text-field label="TIN" prepend-icon="account_box" v-model="profile.tin" required>
+                  </v-text-field> -->
 
                   <v-text-field label="Phone No" prepend-icon="account_box" v-model="profile.phone" required>
                   </v-text-field>
@@ -38,8 +38,8 @@
                     <v-text-field label="Adress" prepend-icon="account_box" v-model="branch.address" required>
                     </v-text-field>
 
-                    <v-text-field label="Dc Number" prepend-icon="account_box" v-model="branch.dc_number" required>
-                    </v-text-field>
+                    <!-- <v-text-field label="Dc Number" prepend-icon="account_box" v-model="branch.dc_number" required>
+                    </v-text-field> -->
 
                 </v-form>
               </v-card-text>
