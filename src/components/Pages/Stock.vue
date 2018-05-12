@@ -309,7 +309,7 @@
                         </v-layout>
                     </v-container> 
 
-        <v-snackbar bottom="bottom" color="messageColor lighten-1" v-model="snackbar">
+        <v-snackbar bottom="bottom" :color="messageColor" v-model="snackbar">
         {{ message }}
         </v-snackbar>
         </v-container>
@@ -493,11 +493,11 @@
                      this.stock.stockRecieved = false;
                  }
                  if(this.stock.dateDelivery == null || this.stock.dateOrder== null  || this.stock.supplierId == null){
-                    self.showMessage('green', 'Please fill required fields before clicking add');   
+                    self.showMessage('info', 'Please fill required fields before clicking add');   
                     return;
                  }
                  if(this.stock.items.length == 0){
-                    self.showMessage('green', 'Please add atleast 1 item to add to stock');   
+                    self.showMessage('info', 'Please add atleast 1 item to add to stock');   
                     return;
                  }
                  this.stock.purchaseNumber = this.purchaseNumber;
@@ -517,7 +517,7 @@
                             .then(function(response){
                                 removeLoader()
                                 self.$refs.form.reset();
-                                self.showMessage('green', 'Stock added successfully');
+                                self.showMessage('success', 'Stock added successfully');
                                 self.getAllPurchaseOrders();
                                 self.getAllStock();
                             }).catch(function(data) {
@@ -529,7 +529,7 @@
                             self.getAllPurchaseOrders()
                             self.getAllStock();
                             self.$refs.form.reset();
-                            self.showMessage('green', 'Stock added successfully');
+                            self.showMessage('success', 'Stock added successfully');
                         }
                     }).catch(function(data){
                         removeLoader()
@@ -557,7 +557,7 @@
                         .then(function(response){
                             removeLoader()
                             self.$refs.form.reset();
-                            self.showMessage('green', 'Stock added successfully');
+                            self.showMessage('success', 'Stock added successfully');
                             self.getAllPurchaseOrders();
                             self.getAllStock();
                         }).catch(function(data) {
@@ -637,11 +637,11 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Stock item deleted successfully');
+                        self.showMessage('success', 'Stock item deleted successfully');
                         self.getAllStock();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
             },
             updateStock(item){
@@ -653,12 +653,12 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Stock item updated successfully');
+                        self.showMessage('success', 'Stock item updated successfully');
                         removeLoader();
                         self.getAllStock();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
 
             }

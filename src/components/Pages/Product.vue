@@ -234,7 +234,7 @@
                                 </v-flex>
                             </v-layout>
                         </v-container>
-                          <v-snackbar bottom="bottom" color="messageColor lighten-1" v-model="snackbar">
+                          <v-snackbar bottom="bottom" :color="messageColor" v-model="snackbar">
                             {{ message }}
                          </v-snackbar>
                          </v-container>
@@ -372,7 +372,7 @@
                     })
                     .then(function(response){
                         self.$refs.form.reset();
-                        showMessage('green', 'Category added successfully');
+                        self.showMessage('success', 'Category added successfully');
                         self.getAllCategories();
                     }).catch(function(data){
                         self.message = data.message
@@ -388,7 +388,7 @@
                     .then(function(response){
                         self.getAllcompanyTaxList();
                         self.$refs.form.reset();
-                        showMessage('green', 'Company Tax added successfully');
+                        self.showMessage('success', 'Company Tax added successfully');
                     }).catch(function(data){
                         self.message = data.message
                     })
@@ -410,7 +410,7 @@
                         self.getAllProducts();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     });
              },
              handleCategoriesResponse(data){
@@ -449,11 +449,11 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Product deleted successfully');
+                        self.showMessage('success', 'Product deleted successfully');
                         self.getAllProducts();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
              },
              deleteCategory(categoryId){
@@ -464,11 +464,11 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Category deleted successfully');
+                        self.showMessage('success', 'Category deleted successfully');
                         self.getAllCategories();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
              },
              deleteTax(taxId){
@@ -480,10 +480,10 @@
                 })
                 .then(function(response){
                     self.getAllcompanyTaxList();
-                        self.showMessage('green', 'Company tax has been deleted successfully');
+                        self.showMessage('success', 'Company tax has been deleted successfully');
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
              },
              handleNavigationMenu(visibleFlag){
@@ -517,7 +517,7 @@
                 })
                 .then(function(response){
                         self.$refs.form.reset();
-                        self.showMessage('green', 'Category Details added successfully');
+                        self.showMessage('success', 'Category Details added successfully');
                     }).catch(({response: {data}}) => {
                         self.message = data.message
                     })

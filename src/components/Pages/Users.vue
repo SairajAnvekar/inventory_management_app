@@ -295,7 +295,7 @@
                             </v-flex>
                         </v-layout>
                     </v-container>
-                          <v-snackbar bottom="bottom" color="messageColor lighten-1" v-model="snackbar">
+                          <v-snackbar :color="messageColor" bottom="bottom"  v-model="snackbar">
                             {{ message }}
                          </v-snackbar>
                          </v-container>
@@ -319,7 +319,7 @@
             isSupplierView : true,
             isCustomerAdd: false,
             isCustomerView : false,
-            messageColor : 'red',
+            messageColor : 'error',
             category_id : '',
             message : '',
             rules: [ (value) => !!value || 'This field is required' ],
@@ -406,12 +406,12 @@
                     })
                     .then(function(response){
                         self.$refs.form.reset();
-                        self.showMessage('green', 'Customer added successfully');
+                        self.showMessage('success', 'Customer added successfully');
                         self.getAllCustomers();
                     }).catch(function(response) {
                         if(response){
                             self.message = response.message
-                            self.snackbar = true
+                            self.showMessage('error', response.message);
                         }
                     })
              },
@@ -424,11 +424,11 @@
                     })
                     .then(function(response){
                         self.$refs.form.reset();
-                        self.showMessage('green', 'Supplier added successfully');
+                        self.showMessage('success', 'Supplier added successfully');
                         self.getAllSuppliers();
                     }).catch(function(response){
                         self.message = response.message
-                        self.snackbar = true
+                        self.showMessage('error', response.message);
                     });
              },
              deleteSupplier(supplierId){
@@ -439,11 +439,11 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Supplier deleted successfully');
+                        self.showMessage('success', 'Supplier deleted successfully');
                         self.getAllSuppliers();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
              },
              deleteCustomer(customerId){
@@ -454,11 +454,11 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Customer deleted successfully');
+                        self.showMessage('success', 'Customer deleted successfully');
                         self.getAllCustomers();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
              },
              handleNavigationMenu(visibleFlag){
@@ -483,11 +483,11 @@
                     'Authorization': Authentication.getAuthenticationHeader(this)
                     }
                 }).then(function(response){
-                        self.showMessage('green', 'Customer updated successfully');
+                        self.showMessage('success', 'Customer updated successfully');
                         self.getAllCustomers();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
              },
              updateSupplier(suppObj){
@@ -503,11 +503,11 @@
                     'Authorization': Authentication.getAuthenticationHeader(this)
                     }
                 }).then(function(response){
-                        self.showMessage('green', 'Supplier updated successfully');
+                        self.showMessage('success', 'Supplier updated successfully');
                         self.getAllSuppliers();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
              },
              handleCustomerGet(data){

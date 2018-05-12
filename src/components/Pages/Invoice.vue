@@ -478,7 +478,7 @@
                       </v-layout>
                     </v-container>
 
-        <v-snackbar bottom="bottom" color="messageColor lighten-1" v-model="snackbar">
+        <v-snackbar bottom="bottom" :color="messageColor" v-model="snackbar">
         {{ message }}
         </v-snackbar>
         </v-container>
@@ -748,11 +748,11 @@
                 var self = this;
                 this.invoice.items = this.invoiceItems;
                  if(this.invoice.dateOfSale == null || this.invoice.category_id == null){
-                    self.showMessage('green', 'Please fill required fields before clicking add');   
+                    self.showMessage('success', 'Please fill required fields before clicking add');   
                     return;
                  }
                  if(this.invoice.items.length == 0){
-                    self.showMessage('green', 'Please add atleast 1 item to add to invoice');   
+                    self.showMessage('success', 'Please add atleast 1 item to add to invoice');   
                     return;
                  }
 
@@ -776,7 +776,7 @@
                             .then(function(response){
                                 removeLoader()
                                 self.$refs.form.reset();
-                                self.showMessage('green', 'Stock added successfully');
+                                self.showMessage('success', 'Stock added successfully');
                                 self.clearStockEntries();
                                 self.getAllInvoices();
                                 self.getAllProducts();
@@ -875,7 +875,7 @@
                     obj.sellingPrice = "";
                     obj.batchNumber = "";
                     this.refreshStockQuantity();
-                    this.showMessage("green","You dont have sufficient quantity for this batch number")
+                    this.showMessage("info","You dont have sufficient quantity for this batch number")
                     return;
                  }
                  this.currentPrice = obj.sellingPrice;
@@ -886,7 +886,7 @@
 
                  if(obj.sellingPrice < 0){
                     obj.sellingPrice = 0;
-                    this.showMessage("green","You cannot enter selling price less than 0");
+                    this.showMessage("info","You cannot enter selling price less than 0");
                     return;
                  }
                 this.currentPrice = obj.sellingPrice;
@@ -1002,7 +1002,7 @@
                 if(this.paidAmount >= this.invoice.totalAmount){
                     this.isPending = false;
                     this.paidAmount = 0;
-                    this.showMessage("green","Paid amount cannot exceed or be equal to the total amount")
+                    this.showMessage("info","Paid amount cannot exceed or be equal to the total amount")
                 }
              },
              refreshInvoiceList(data,self,isSearch){
@@ -1083,7 +1083,7 @@
                         self.refreshInvoiceList(response.data,self,true)
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('success', data.message);
                     })
              },
              setCustomerPendingAmount(){
@@ -1107,24 +1107,24 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Invoice updated successfully');
+                        self.showMessage('success', 'Invoice updated successfully');
                         self.getAllInvoices();
                         self.activeCustomerSearch();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
 
 
              },
              validateAmountPaidUpdate(){
                 if(this.customerAmountPaid<0){
-                    this.showMessage("green","Payment amount cannot be less than 0");
+                    this.showMessage("info","Payment amount cannot be less than 0");
                     this.customerAmountPaid = 0;
                     return false;;
                 }
                 if(this.customerAmountPaid>this.searchCustomerPendingAmount){
-                    this.showMessage("green","Payment amount cannot be more than pending amount");
+                    this.showMessage("info","Payment amount cannot be more than pending amount");
                     this.customerAmountPaid = 0;
                     return false;
                 }
@@ -1140,13 +1140,13 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Amount updated successfully for this customer');
+                        self.showMessage('success', 'Amount updated successfully for this customer');
                         self.getAllInvoices();
                         self.activeCustomerSearch();
                         self.customerAmountPaid = 0;
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     });
              },
              updateProductBatchList(){
@@ -1189,11 +1189,11 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Invoice deleted successfully');
+                        self.showMessage('success', 'Invoice deleted successfully');
                         self.getAllInvoices();
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
              },
              updatePendingInvoice(item){
@@ -1210,14 +1210,14 @@
                     }
                 })
                 .then(function(response){
-                        self.showMessage('green', 'Invoice updated successfully');
+                        self.showMessage('success', 'Invoice updated successfully');
                         self.getAllInvoices();
                         if(self.isCustomerInvoiceView){
                             self.activeCustomerSearch();
                         }
                     }).catch(({response: {data}}) => {
                         self.message = data.message
-                        self.snackbar = true
+                        self.showMessage('error', data.message);
                     })
 
              },            
