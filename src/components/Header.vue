@@ -56,7 +56,7 @@
                   </v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>      
-              <v-list-tile >
+              <v-list-tile v-if="role == 'admin'">
                 <v-list-tile-action>
                   <v-icon>search</v-icon>
                 </v-list-tile-action>

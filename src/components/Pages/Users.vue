@@ -141,16 +141,12 @@
 
                                         <v-text-field label="Email Id"
                                         v-model="supplier.emailId"
-                                        prepend-icon="account_box"
-                                        :rules="rules"
-                                        required>
+                                        prepend-icon="account_box">
                                         </v-text-field>
                                         
                                         <v-text-field label="Telephone Number"
                                         v-model="supplier.telephoneNumber"
-                                        prepend-icon="account_box"
-                                        :rules="rules"
-                                        required>
+                                        prepend-icon="account_box">
                                         </v-text-field> 
                                         <v-text-field label="GSTIN"
                                         v-model="supplier.gstinNumber"
@@ -276,16 +272,12 @@
                                         
                                         <v-text-field label="Email Id"
                                         v-model="customer.emailId"
-                                        prepend-icon="account_box"
-                                        :rules="rules"
-                                        required>
+                                        prepend-icon="account_box">
                                         </v-text-field>
 
                                         <v-text-field label="Telephone Number"
                                         v-model="customer.telephoneNumber"
-                                        prepend-icon="account_box"
-                                        :rules="rules"
-                                        required>
+                                        prepend-icon="account_box">
                                         </v-text-field>
 
                                         <v-text-field label="GSTIN "
@@ -481,6 +473,11 @@
              updateCustomer(custObj){
                  var customerId = custObj._id
                  var self = this;
+                 for (var x in custObj){
+                    if(custObj[x] == "N/A"){
+                        custObj[x] = "";
+                    }
+                 }
                  Axios.put(`${apiURL}/api/v1/customer/` + customerId,{customer : custObj},{
                     headers: {
                     'Authorization': Authentication.getAuthenticationHeader(this)
@@ -495,6 +492,11 @@
              },
              updateSupplier(suppObj){
                  var supplierId = suppObj._id
+                for (var x in suppObj){
+                    if(suppObj[x] == "N/A"){
+                        suppObj[x] = "";
+                    }
+                }
                  var self = this;
                  Axios.put(`${apiURL}/api/v1/supplier/` + supplierId,{supplier : suppObj},{
                     headers: {
@@ -512,7 +514,7 @@
                 var self = this;
                 data.forEach(function(obj){
                     for (var x in obj){
-                        if(obj[x] == null){
+                        if(obj[x] == null || obj[x] == ""){
                             obj[x] = "N/A";
                         }
                     }
@@ -523,7 +525,7 @@
                 var self = this;
                 data.forEach(function(obj){
                     for (var x in obj){
-                        if(obj[x] == null){
+                        if(obj[x] == null || obj[x] == ""){
                             obj[x] = "N/A";
                         }
                     }

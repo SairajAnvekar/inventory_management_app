@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-content v-if="role == 'admin'">
    <v-layout>
       <app-header></app-header>
         <v-container >  
@@ -118,6 +118,7 @@ export default {
   data () {
     return {
       validated : 1,
+      role: this.$cookie.get('role'),
       loginPage : false, 
       isCustomerView : true,
       isPurchaseView : false,

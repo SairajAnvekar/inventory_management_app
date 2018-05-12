@@ -48,6 +48,7 @@
                           :items="products"
                           v-model="props.item.productId"
                           item-value="_id"
+                          autocomplete
                           slot="input"
                           label="Edit"
                           single-line 
@@ -129,6 +130,7 @@
                                         <v-select
                                         label="Supplier"
                                         :items="suppliers"
+                                        autocomplete
                                         v-model="stock.supplierId"
                                         item-value="_id"
                                         single-line></v-select>        
@@ -208,6 +210,7 @@
                                         <td >
                                             <v-select 
                                             :items="products"
+                                            autocomplete
                                             v-model="props.item.productId"
                                             item-value="_id"
                                             single-line></v-select>        

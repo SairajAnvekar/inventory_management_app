@@ -167,6 +167,7 @@
                             :items="customers"
                             @input="activeCustomerSearch()"
                             v-model="searchCustomer"
+                            autocomplete
                             item-value="_id"
                             single-line></v-select>      
                         </v-flex>
@@ -176,6 +177,7 @@
                             :items="invoiceStatus"
                             @input="activeCustomerStatus()"
                             v-model="searchInvoiceStatus"
+                            autocomplete
                             item-value="value"
                             single-line></v-select> 
 
@@ -285,6 +287,7 @@
                                         @input="activeCustomer()"
                                         v-model="invoice.customerId"
                                         item-value="_id"
+                                        autocomplete
                                         single-line></v-select>        
                                     </v-flex>
                                     <v-flex xs2> 
@@ -294,6 +297,7 @@
                                         item-value="_id"
                                         @input="activeCategory()"
                                         label="Category"
+                                        autocomplete
                                         single-line></v-select>
                                     </v-flex>
                                     <v-flex xs2>
@@ -303,6 +307,7 @@
                                             :items="salesPersons"
                                             v-model="invoice.salesPersonId"
                                             item-value="_id"
+                                            autocomplete
                                             single-line></v-select>        
                                         </v-flex>
                                     <v-flex xs2>
@@ -369,6 +374,7 @@
                                             :items="props.item.currentBatchList"
                                             @input="activeBatch(props.item)"
                                             v-model="props.item.batchNumber"
+                                            autocomplete
                                             item-value="text"
                                             single-line></v-select>   
                                         </td>
