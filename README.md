@@ -1,6 +1,6 @@
 # employe-management
 
-> A employe managment application
+> A inventory managment application
 
 ## Build Setup
 
