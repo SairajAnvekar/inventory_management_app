@@ -1,4 +1,4 @@
-# employe-management
+# inventory-management
 
 > A inventory managment application
 
